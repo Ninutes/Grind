@@ -162,9 +162,9 @@ class Captcha(commands.Cog):
                 dmcontent = re.search(self.regex_box, msg.content)
                 if dmcontent:
                     box = dmcontent.group(1)
-                    LOG.captcha(message, 'solved', box)
+                    LOG.captcha(captcha_msg, 'solved', box)
                 else:
-                    LOG.captcha(message,'solved')
+                    LOG.captcha(captcha_msg,'solved')
                 GLOBAL.is_captcha = False
                 await asyncio.sleep(10)
                 runner = self.bot.get_cog('Tasks')

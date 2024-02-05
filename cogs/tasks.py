@@ -171,6 +171,7 @@ class Tasks(commands.Cog):
             and not GLOBAL.is_captcha
         ):
             await GLOBAL.g_channel.typing()
+            await asyncio.sleep(self.delay)
             await GLOBAL.g_channel.send(f"w{data['text']} {data['text2']}")
             self.custom_time = time()
     async def runner_sleep(self):

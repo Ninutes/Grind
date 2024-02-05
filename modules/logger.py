@@ -37,14 +37,15 @@ class Log:
         flag = '✅' if key == 'solved' else '❌' if key == 'not solved' else '⚠️'
         color = selfcord.Color.green() if key == 'solved' else selfcord.Color.red()
         embed = Embed(
+            description=f'`{flag}` Captcha **{key}** in {message.jump_url}',
             timestamp=datetime.datetime.now(),
             color=color
         )
         if fail:
-            embed.description = f'10 minutes failed: {fail}'
+            embed.description += f'\n10 minutes failed: {fail}'
         if balance:
             embed.set_footer(text=f'balance: $ {balance}', icon_url='https://cdn.discordapp.com/emojis/1179649531927863397.webp')
-        embed.add_field(name='Captcha', value=f'`{flag}` **{key}** in {message.jump_url}', inline=True)
+
         if message.attachments:
             embed.set_image(url=message.attachments[0].url)
         if key in ['not solved', 'detected']:
