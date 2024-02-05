@@ -144,18 +144,19 @@ class Tasks(commands.Cog):
         ):
             cmd = random.choice(["h", "b"])
             cmd2 = 'h' if cmd == 'b' else 'b'
-            
+            prefix = GLOBAL.get_value('owoprefix')
             self._counter += 1
             
             await GLOBAL.g_channel.typing()
-            await GLOBAL.g_channel.send(f'owo{cmd}')
+            await GLOBAL.g_channel.send(f'{prefix}{cmd}')
             await asyncio.sleep(self.delay)
             if not GLOBAL.is_captcha:
                 await GLOBAL.g_channel.typing()
-                await GLOBAL.g_channel.send(f'owo{cmd2}')
+                await GLOBAL.g_channel.send(f'{prefix}{cmd2}')
             self.hunt_time = time()
     
     async def pray(self) -> None:
+        prefix = GLOBAL.get_value('owoprefix')
         prayON  =  GLOBAL.get_value('pray')
         prayID = '' if prayON['ID'] is None else prayON['ID']
         if not prayON['enable']:
@@ -166,7 +167,7 @@ class Tasks(commands.Cog):
         ):
             await GLOBAL.g_channel.typing()
             await asyncio.sleep(self.delay)
-            await GLOBAL.g_channel.send(f"w{prayON['mode']} {prayID}")
+            await GLOBAL.g_channel.send(f"{prefix}{prayON['mode']} {prayID}")
         self.pray_time = time()
 
     async def random_exp(self):
@@ -190,6 +191,7 @@ class Tasks(commands.Cog):
             self.exp_time = time()
     
     async def custom_say(self):
+        prefix = GLOBAL.get_value('owoprefix')
         data = GLOBAL.get_value('custom')
         data_time = int(data['time'])
         if not data['enable']:
@@ -200,7 +202,7 @@ class Tasks(commands.Cog):
         ):
             await GLOBAL.g_channel.typing()
             await asyncio.sleep(self.delay)
-            await GLOBAL.g_channel.send(f"w{data['text']} {data['text2']}")
+            await GLOBAL.g_channel.send(f"{prefix}{data['text']} {data['text2']}")
             self.custom_time = time()
     async def runner_sleep(self):
         data = GLOBAL.get_value('sleep')
