@@ -7,7 +7,7 @@ from time import time
 import selfcord
 from selfcord.ext import commands
 from twocaptcha import TwoCaptcha
-from config import GLOBAL, Auth, is_me
+from config import GLOBAL, Auth
 from modules.logger import LOG
 
 
@@ -19,7 +19,7 @@ class Captcha(commands.Cog):
         self.owoDM = None
         self.captcha_image = None
         self.captcha_length = None
-        self.regex_box = r':blank:427371936482328596>\s*\*\*\|\*\*\s*(.*)$'
+        self.regex_box = r'10 minutes:\s(.*)$'
         self.regex_ban = r'You have been banned for (\d+)H'
     
     def cog_check(self, ctx: commands.Context):
@@ -83,11 +83,12 @@ class Captcha(commands.Cog):
         async for msg in self.owoDM.history(limit=1):
             if 'verified' in msg.content:
                 GLOBAL.is_captcha = False
-                LOG.captcha(message, 'solved')
                 dmcontent = re.search(self.regex_box, msg.content)
                 if dmcontent:
                     box = dmcontent.group(1)
-                    LOG.success(box)
+                    LOG.captcha(message, 'solved', box)
+                else:
+                    LOG.captcha(message,'solved')
                 self.report(result['captchaId'])
                 await asyncio.sleep(10)
                 runner = self.bot.get_cog('Tasks')
@@ -158,11 +159,12 @@ class Captcha(commands.Cog):
                 if 'captcha' in message.content.lower() and message.attachments:
                     captcha_msg = message
             if 'verified' in msg.content.lower():
-                LOG.captcha(captcha_msg, 'solved')
                 dmcontent = re.search(self.regex_box, msg.content)
                 if dmcontent:
                     box = dmcontent.group(1)
-                    LOG.success(box)
+                    LOG.captcha(message, 'solved', box)
+                else:
+                    LOG.captcha(message,'solved')
                 GLOBAL.is_captcha = False
                 await asyncio.sleep(10)
                 runner = self.bot.get_cog('Tasks')
@@ -180,6 +182,16 @@ class Captcha(commands.Cog):
                 ban_time = ban_time.strftime("%d %B %Y %H:%M")
                 LOG.failure(f'You have been banned until {ban_time}')
                 GLOBAL.is_captcha = True
+    @commands.command()
+    async def captcha_count(self, ctx: commands.Context, amount: int):
+        self.owoDM = self.bot.get_user(GLOBAL.owoID).dm_channel
+        total = 0
+        async for message in self.owoDM.history(limit=200):
+            if message.content.count('cross_box') == amount:
+                total += 1
+            if message.content.count('cross_box') == amount - 1:
+                break
+        LOG.info(f'total {amount} cross_box :{total}')
     @commands.Cog.listener()
     async def on_message(self, message : selfcord.Message):
         if not message.channel.id == GLOBAL.get_value('channelID'):return

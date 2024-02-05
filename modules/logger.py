@@ -1,5 +1,6 @@
 
 import datetime
+from typing import Optional
 import selfcord
 from selfcord import Embed
 
@@ -31,7 +32,7 @@ class Log:
         self.wb_ping = GLOBAL.get_value('webhook.ping')
         pass
     
-    def captcha(self, message: selfcord.Message, key : str):
+    def captcha(self, message: selfcord.Message, key : str, fail: Optional[str] = None):
         balance = get_balance()
         flag = '✅' if key == 'solved' else '❌' if key == 'not solved' else '⚠️'
         color = selfcord.Color.green() if key == 'solved' else selfcord.Color.red()
@@ -39,6 +40,8 @@ class Log:
             timestamp=datetime.datetime.now(),
             color=color
         )
+        if fail:
+            embed.description = f'10 minutes failed: {fail}'
         if balance:
             embed.set_footer(text=f'balance: $ {balance}', icon_url='https://cdn.discordapp.com/emojis/1179649531927863397.webp')
         embed.add_field(name='Captcha', value=f'`{flag}` **{key}** in {message.jump_url}', inline=True)
@@ -164,6 +167,18 @@ class Log:
             content=f'> **I am here : [ <#{channel}> ] **',
             username=self.username,
             avatar_url=self.avatarURL,
+            embed=embed
+        )
+    
+    def log_avatar(self, user : selfcord.Member):
+        embed = Embed(
+            color=selfcord.Color.random()
+        )
+        embed.set_author(name=f'avatar')
+        embed.set_image(url=user.display_avatar.url)
+        WB.send(
+            username=user.name,
+            avatar_url=user.display_avatar.url,
             embed=embed
         )
 LOG = Log()

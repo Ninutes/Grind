@@ -1,3 +1,4 @@
+from typing import Optional
 from selfcord.ext import commands
 import selfcord
 
@@ -17,6 +18,7 @@ class Utility(commands.Cog):
     async def ping(self, ctx: commands.Context):
         await ctx.message.delete()
         await ctx.send(f'🏓... pong `{round(self.bot.latency * 1000)}`ms', delete_after=10)
+
     @commands.command(aliases=['restart'])
     async def die(self, ctx: commands.Context):
         await ctx.message.delete()

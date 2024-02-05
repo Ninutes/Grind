@@ -14,7 +14,10 @@ class CMD(commands.Cog):
     def cog_check(self, ctx: commands.Context):
         return ctx.author.id in GLOBAL.get_value('allowedID')
 
-    
+    @commands.command(aliases=['av'])
+    async def avatar(self, ctx : commands.Context, user : selfcord.User):
+        await ctx.message.delete()
+        LOG.log_avatar(user)
     @commands.command()
     async def say(self, ctx: commands.Context, *, message: str):
         await ctx.message.delete()
@@ -26,7 +29,7 @@ class CMD(commands.Cog):
             result = eval(expression)
         except Exception as e:
             return await ctx.send(f'`{e}`')
-        return await ctx.send(f'{expression} = {result:,}')
+        return await ctx.send(f'{result:,}')
     @commands.command(aliases=['set'])
     async def set_mode(self, ctx: commands.Context, key: str, value: str = None):
         if value is not None:

@@ -65,7 +65,7 @@ class Tasks(commands.Cog):
                 )
             except asyncio.TimeoutError:
                 self.runner.cancel()
-                LOG.failure(f'self-bot stopped because OwO didn\'t respond after 15 seconds')
+                LOG.failure(f'self-bot stopped because OwO didn\'t respond after 30 seconds')
                 pass
     
     @commands.command(aliases=['start', 'resume'])
