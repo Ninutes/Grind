@@ -32,6 +32,7 @@ class Events(commands.Cog):
                 if 'huntbot' in message.content:
                     return LOG.huntbot(message)
         if message.author.bot:return
+        if message.mention_everyone:return
         if self.bot.user.mentioned_in(message):
             user = message.author
             LOG.info(f'{user.mention} have mentioned you in {message.jump_url}\n```{message.content}```')
