@@ -51,15 +51,15 @@ class Stats(commands.Cog):
     async def reset_owostats(self):
         if datetime.hour == 7:
             LOG.info(f"**Your Daily OwO**\n```{GLOBAL.get_value('OwO.daily')}```")
-            await asyncio.sleep(5)
+            await asyncio.sleep(1)
             GLOBAL.reset_owostats('daily')
         if datetime.now().weekday() == 0:
             LOG.info(f"**Your Weekly OwO**\n```{GLOBAL.get_value('OwO.weekly')}```")
-            await asyncio.sleep(5)
+            await asyncio.sleep(1)
             GLOBAL.reset_owostats('weekly')
         if datetime.day == 1:
             LOG.info(f"**Your Monthly OwO**\n```{GLOBAL.get_value('OwO.monthly')}```")
-            await asyncio.sleep(5)
+            await asyncio.sleep(1)
             GLOBAL.reset_owostats('monthly')
     @reset_owostats.before_loop
     async def reset_owostats_before_loop(self):

@@ -1,6 +1,7 @@
 import asyncio
 
 import json
+from typing import Optional
 import selfcord
 import random
 import os
@@ -29,15 +30,35 @@ class Tasks(commands.Cog):
         self.sleep_time = time()
         self.custom_time = 0
         self.sleep = False
+        self.custom_run = 0
+        self._counter = 0
     
     def cog_check(self, ctx: commands.Context):
         return ctx.author.id in GLOBAL.get_value('allowedID')
     
     async def cog_reload(self):
-        return self.runner.cancel()
+        if self.runner.is_running():
+            return self.runner.restart()
+        
 
     async def cog_unload(self):
         return self.runner.cancel()
+    
+    async def _delete_msg(self, ctx: commands.Context):
+        try:
+            await ctx.message.delete()
+        except Exception:
+            return  
+    
+    async def counter_time(self):
+        time = datetime.now() - self.run_time
+        days, seconds = time.days, time.seconds
+        hours = days * 24 + seconds // 3600
+        minutes = (seconds % 3600) // 60
+        seconds = seconds % 60
+        if self.custom_counter != 0:
+            return LOG.info(f'`⛔` stopping self-bot after running **{self._counter}** battles in **{hours}H {minutes}M {seconds}S**')
+        return LOG.info(f'`⛔` stopping self-bot after running in **{hours}H {minutes}M {seconds}S**')
     
     def start_task(self):
         if self.runner.is_running():
@@ -69,33 +90,38 @@ class Tasks(commands.Cog):
                 pass
     
     @commands.command(aliases=['start', 'resume'])
-    async def start_grind(self, ctx: commands.Context):
+    async def start_grind(self, ctx: commands.Context, count: Optional[int] = None):
+        if count:
+            self.custom_run = count
+        
+        self._counter = 0
         self.run_time = datetime.now()
-        await ctx.message.delete()
+        await self._delete_msg(ctx)
         GLOBAL.set_channel(ctx.channel)
         GLOBAL.is_captcha = False
+        
         self.start_task()
-        LOG.info(f'`🟢` starting self-bot in {ctx.channel.jump_url}')
+        
+        desc = f'`🟢` starting self-bot in {ctx.channel.jump_url}'
+        if count:
+            self.custom_counter = count
+            desc += f'\n and will automatically stop after {count} battles reached'
+        LOG.info(desc)
     
     @commands.command(aliases=['stop', 'pause'])
     async def stop_grinding(self, ctx: commands.Context):
-        await ctx.message.delete()
-        time = datetime.now() - self.run_time
-        days, seconds = time.days, time.seconds
-        hours = days * 24 + seconds // 3600
-        minutes = (seconds % 3600) // 60
-        seconds = seconds % 60
-        LOG.info(f'`⛔` stopping self-bot after running in **{hours}H {minutes}M {seconds}S**')
+        await self._delete_msg(ctx)
         self.runner.cancel()
     
     @commands.command(aliases=['ch'])
     async def change_channel(self, ctx: commands.Context):
+        await self._delete_msg(ctx)
         GLOBAL.set_channel(ctx.channel)
-        return
+        return LOG.success(f'change channel to {ctx.channel.jump_url}')
     
     @commands.command()
     async def cek(self, ctx: commands.Context):
-        await ctx.message.delete()
+        await self._delete_msg(ctx)
         channel = self.bot.get_channel(GLOBAL.get_value('channelID'))
         running = '`⛔`' if self.runner.is_running() else '`🟢`'
         await ctx.send(f'> {running} here {channel.jump_url}', delete_after=10)
@@ -118,6 +144,8 @@ class Tasks(commands.Cog):
         ):
             cmd = random.choice(["h", "b"])
             cmd2 = 'h' if cmd == 'b' else 'b'
+            
+            self._counter += 1
             
             await GLOBAL.g_channel.typing()
             await GLOBAL.g_channel.send(f'owo{cmd}')
@@ -186,7 +214,7 @@ class Tasks(commands.Cog):
             await asyncio.sleep(sleeping)
             self.sleep = False
             self.sleep_time = time()
-
+    
     @tasks.loop(seconds=5)
     async def runner(self):
         try:
@@ -197,11 +225,20 @@ class Tasks(commands.Cog):
             await self.random_exp()
             await self.custom_say()
             await self.runner_sleep()
+            
             if stop:
                 self.runner.cancel()
-
+                
+            if self.custom_run != 0 and self._counter == self.custom_run:
+                self.runner.cancel()
+                
         except Exception as e:
             LOG.failure(e)
             self.runner.cancel()
+    
+    @runner.after_loop
+    async def runner_after_loop(self):
+        if self.custom_run != 0 and not GLOBAL.is_captcha:
+            await self.counter_time()
 async def setup(bot):
     await bot.add_cog(Tasks(bot))

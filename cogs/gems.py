@@ -4,6 +4,7 @@ from selfcord.ext import commands
 import selfcord
 
 from config import GLOBAL
+from modules.logger import LOG
 
 class Gems(commands.Cog):
     """The description for Gems goes here."""
@@ -18,6 +19,19 @@ class Gems(commands.Cog):
     def is_myhunt(self, message):
         return GLOBAL.get_value('gem') and message.channel == GLOBAL.g_channel and message.author.id == GLOBAL.owoID and '**🌱' in message.content
     
+    async def _delete_msg(self, ctx: commands.Context):
+        try:
+            await ctx.message.delete()
+        except Exception:
+            return
+    @commands.command(name='gem')
+    async def set_gem(self, ctx: commands.Context):
+        await self._delete_msg(ctx)
+        if GLOBAL.get_value('gem'):
+            GLOBAL.set_value('gem', False)
+        else:
+            GLOBAL.set_value('gem', True)
+        LOG.success(f'**GEMS MODE** set to: %s' % GLOBAL.get_value('gem'))
     @commands.Cog.listener()
     async def on_message(self, message: selfcord.Message):
         if self.is_myhunt(message):

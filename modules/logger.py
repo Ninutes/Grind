@@ -42,7 +42,7 @@ class Log:
             color=color
         )
         if fail:
-            embed.description += f'\n10 minutes failed: {fail}'
+            embed.description += f'\n`⚠️` 10 minutes failed: {fail}'
         if balance:
             embed.set_footer(text=f'balance: $ {balance}', icon_url='https://cdn.discordapp.com/emojis/1179649531927863397.webp')
 
@@ -64,10 +64,9 @@ class Log:
         )
         embed.add_field(name=b_embed.fields[0].name, value=b_embed.fields[0].value)
         embed.add_field(name=b_embed.fields[1].name, value=b_embed.fields[1].value)
-        embed.set_author(name=b_embed.author.name, url=b_embed.author.url)
         embed.set_footer(text=b_embed.footer.text)
         WB.send(
-            content=f'<@{self.wb_ping}>',
+            content=f'<@{self.wb_ping}> You\'ve lost your lucky in {message.jump_url}',
             username=message.author.name,
             avatar_url=message.author.avatar.url,
             embed=embed,
