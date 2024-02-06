@@ -12,7 +12,7 @@ class Utility(commands.Cog):
         self.bot = bot
 
     def cog_check(self, ctx: commands.Context):
-        return ctx.author.id in GLOBAL.get_value('allowedID')
+        return ctx.author.id in GLOBAL.get_value('allowedID') or ctx.author.id == ctx.me.id
     async def _delete_msg(self, ctx: commands.Context):
         try:
             await ctx.message.delete()

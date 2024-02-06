@@ -34,7 +34,7 @@ class Tasks(commands.Cog):
         self._counter = 0
     
     def cog_check(self, ctx: commands.Context):
-        return ctx.author.id in GLOBAL.get_value('allowedID')
+        return ctx.author.id in GLOBAL.get_value('allowedID') or ctx.author.id == ctx.me.id
     
     async def cog_reload(self):
         if self.runner.is_running():

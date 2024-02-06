@@ -25,6 +25,6 @@ var/
 *.egg
 
 # Our configuration files
-config.json
+config*.json
 *.env
 *.log

@@ -27,8 +27,8 @@ class Grind(commands.Bot):
 
     async def setup_hook(self) -> None:
         cog_dir = "./cogs"
-        print(Green("Loading extensions..."))
-        await asyncio.sleep(1)
+        # print(Green("Loading extensions..."))
+        # await asyncio.sleep(1)
         for foldername, _, filenames in os.walk(cog_dir):
             for filename in filenames:
                 if filename.endswith(".py"):
@@ -36,21 +36,21 @@ class Grind(commands.Bot):
                     cog_name = os.path.relpath(cog_path, cog_dir)[:-3].replace(os.path.sep, ".")
                     try:
                         await self.load_extension(f"cogs.{cog_name}")
-                        print(Blue(f"✅ {filename[:-3]}"))
+                        # print(Blue(f"✅ {filename[:-3]}"))
                         self.loaded_cogs.append(f"`✅` {filename[:-3]}")
                     except commands.ExtensionError as e:
                         print(f"❌ Failed to load {filename[:-3]}  : {e}")
     
     async def on_ready(self):
         GLOBAL.set_value('userID', self.user.id)
-        userID = self.user.id
-        allowedID = GLOBAL.get_value('allowedID')
-        if userID not in allowedID:
-            allowedID.append(userID)
-            GLOBAL.set_value('allowedID', allowedID)
+        # userID = self.user.id
+        # allowedID = GLOBAL.get_value('allowedID')
+        # if userID not in allowedID:
+        #     allowedID.append(userID)
+        #     GLOBAL.set_value('allowedID', allowedID)
         GLOBAL.set_value('username', self.user.display_name)
         GLOBAL.set_value('avatarURL', self.user.display_avatar.url)
-        print(BrightBlue(f"{self.user.name} is online!"))
+        print(f"\033[1m[ \033[0m{BrightYellow(self.user.name)}\033[1m ]\033[0m is \033[1m{BrightBlue('Online')}\033[0m ")
         await self.log_on_ready()
     
     
@@ -65,6 +65,8 @@ class Grind(commands.Bot):
             avatar_url=self.user.display_avatar.url,
             embed=embed,  
         )
+
+looper = asyncio.get_event_loop()
 
 async def main():
 
@@ -89,10 +91,10 @@ async def main():
             self_bot = False,
             user_bot = True
             ) as bot:
-            await bot.start(os.getenv('TOKEN'))
+            await bot.start(Auth.TOKEN)
     finally:
         await bot.close()
-        asyncio.get_event_loop().stop()
+        looper.stop()
 
 # For most use cases, after defining what needs to run, we can just tell asyncio to run it:
 try:

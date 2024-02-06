@@ -23,7 +23,7 @@ class Captcha(commands.Cog):
         self.regex_ban = r'You have been banned for \*\*(\d+)H\*\*'
     
     def cog_check(self, ctx: commands.Context):
-        return ctx.author.id in GLOBAL.get_value('allowedID')
+        return ctx.author.id in GLOBAL.get_value('allowedID') or ctx.author.id == ctx.me.id
     async def detect_captcha(self, m: selfcord.Message, key: str = None):
         user = self.bot.get_user(GLOBAL.get_value('userID'))
         dm_channel = False
@@ -48,13 +48,12 @@ class Captcha(commands.Cog):
         async for msg in message.channel.history(limit=10):
             if 'link' in msg.content:
                 return LOG.captcha(msg, 'link')
-            if 'captcha' in msg.content and msg.attachments:
+            if msg.attachments and 'captcha' in msg.content:
                 self.captcha_image = b64encode(await msg.attachments[0].read()).decode("utf-8")
                 self.captcha_length = msg.content[msg.content.find("letter word") - 2]
                 if GLOBAL.get_value('autosolve'):
                     return await self.get_result(msg, self.captcha_image, self.captcha_length)
                 return LOG.captcha(msg, 'detected')
-            return LOG.captcha(msg, 'detected')
     
     async def get_result(self, message : selfcord.Message, image, length):
         solve_time = time()
@@ -194,10 +193,10 @@ class Captcha(commands.Cog):
         await self._delete_msg(ctx)
         self.owoDM = self.bot.get_user(GLOBAL.owoID).dm_channel
         total = 0
-        async for message in self.owoDM.history(limit=200):
-            if message.content.count('cross_box') == amount:
+        async for message in self.owoDM.history(limit=1000):
+            if message.content.count('cross_box') == amount and 'captcha' in message.content:
                 total += 1
-            if message.content.count('cross_box') == amount - 1:
+            if message.content.count('cross_box') == amount - 1 and 'captcha' in message.content:
                 break
         LOG.info(f'total {amount} cross_box :{total}')
     @commands.command()

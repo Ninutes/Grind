@@ -18,7 +18,7 @@ class Events(commands.Cog):
         elif isinstance(error, commands.errors.MissingPermissions):
             LOG.failure(error)
         elif isinstance(error, commands.errors.CheckFailure):
-            LOG.failure(error)
+            return
         elif isinstance(error, commands.errors.CommandNotFound):
             return
         elif isinstance(error, commands.errors.CommandOnCooldown):

@@ -22,7 +22,7 @@ class Stats(commands.Cog):
         self.reset_owostats.start()
 
     def cog_check(self, ctx: commands.Context):
-        return ctx.author.id in GLOBAL.get_value('allowedID')
+        return ctx.author.id in GLOBAL.get_value('allowedID') or ctx.author.id == ctx.me.id
 
     @commands.command(aliases=['owostats'])
     async def stats(self, ctx: commands.Context, *args):

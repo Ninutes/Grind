@@ -12,7 +12,7 @@ class CMD(commands.Cog):
         self.bot = bot
     
     def cog_check(self, ctx: commands.Context):
-        return ctx.author.id in GLOBAL.get_value('allowedID')
+        return ctx.author.id in GLOBAL.get_value('allowedID') or ctx.author.id == ctx.me.id
     async def _delete_msg(self, ctx: commands.Context):
         try:
             await ctx.message.delete()
@@ -26,6 +26,12 @@ class CMD(commands.Cog):
     async def say(self, ctx: commands.Context, *, message: str):
         await self._delete_msg(ctx)
         await ctx.send(f'{message}')
+    @commands.command(aliases=['prefix'])
+    async def set_prefix(self, ctx : commands.Context, prefix : str):
+        await self._delete_msg(ctx)
+        GLOBAL.set_value('prefix', prefix)
+        self.bot.command_prefix = prefix
+        LOG.success(f'prefix set to `{prefix}`')
     @commands.command(aliases=['math', 'calc'])
     async def math_calc(self, ctx: commands.Context, *, expression):
         await self._delete_msg(ctx)

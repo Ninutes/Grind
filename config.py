@@ -9,13 +9,6 @@ def is_me():
         return ctx.author.id == GLOBAL.get_value('userID') or ctx.author.id in GLOBAL.get_value('allowedID')
     return commands.check(predicate)
 
-class Auth:
-    # Make sure to add all details in '.env' file
-    TOKEN = getenv("TOKEN")
-    PREFIXES = getenv("PREFIX")
-    APIKEY = getenv("2captchaApiKey")
-    TELEAPI = getenv("TELEAPI")
-
 class Config:
     
     def __init__(self, filename="config.json"):
@@ -33,7 +26,6 @@ class Config:
     @is_captcha.setter
     def is_captcha(self, value):
         self.set_value('is_captcha', value)
-
 
     def load_config(self):
         try:
@@ -98,4 +90,12 @@ class Config:
         self.save_config()
     def reset_owostats(self, key : str):
         self.set_value(f'OwO.{key}', {})
+
 GLOBAL = Config()
+
+class Auth:
+    # Make sure to add all details in '.env' file
+    TOKEN = getenv("TOKEN")
+    PREFIXES = GLOBAL.get_value('prefix')
+    APIKEY = getenv("2captchaApiKey")
+    TELEAPI = getenv("TELEAPI")
