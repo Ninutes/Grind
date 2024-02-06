@@ -1,3 +1,4 @@
+import asyncio
 from typing import Optional
 from selfcord.ext import commands
 import selfcord
@@ -29,6 +30,8 @@ class Utility(commands.Cog):
         await self._delete_msg(ctx)
         LOG.info(f'restarting self-bot')
         await self.bot.close()
+        looper = asyncio.get_event_loop()
+        looper.stop()
     @commands.command()
     async def tes_tele(self, ctx: commands.Context, msg):
         await self._delete_msg(ctx)
