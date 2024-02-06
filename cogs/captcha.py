@@ -196,7 +196,7 @@ class Captcha(commands.Cog):
         async for message in self.owoDM.history(limit=1000):
             if message.content.count('cross_box') == amount and 'captcha' in message.content:
                 total += 1
-            if message.content.count('cross_box') == amount - 1 and 'captcha' in message.content:
+            if message.content.count('cross_box') == amount - 1 and 'captcha' in message.content or message.content.count('blank_box') == 3:
                 break
         LOG.info(f'total {amount} cross_box :{total}')
     @commands.command()
