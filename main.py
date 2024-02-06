@@ -1,6 +1,7 @@
 # This example covers advanced startup options and uses some real world examples for why you may need them.
 
 import asyncio
+from datetime import datetime
 import logging
 import logging.handlers
 import os
@@ -39,27 +40,31 @@ class Grind(commands.Bot):
                         # print(Blue(f"✅ {filename[:-3]}"))
                         self.loaded_cogs.append(f"`✅` {filename[:-3]}")
                     except commands.ExtensionError as e:
+                        self.loaded_cogs.append(f"`❌` {filename[:-3]}")
                         print(f"❌ Failed to load {filename[:-3]}  : {e}")
     
     async def on_ready(self):
-        GLOBAL.set_value('userID', self.user.id)
+        GLOBAL.set_value('user.ID', self.user.id)
         # userID = self.user.id
         # allowedID = GLOBAL.get_value('allowedID')
         # if userID not in allowedID:
         #     allowedID.append(userID)
         #     GLOBAL.set_value('allowedID', allowedID)
-        GLOBAL.set_value('username', self.user.display_name)
-        GLOBAL.set_value('avatarURL', self.user.display_avatar.url)
+        GLOBAL.set_value('user.username', self.user.display_name)
+        GLOBAL.set_value('user.avatarURL', self.user.display_avatar.url)
         print(f"\033[1m[ \033[0m{BrightYellow(self.user.name)}\033[1m ]\033[0m is \033[1m{BrightBlue('Online')}\033[0m ")
         await self.log_on_ready()
     
     
     async def log_on_ready(self):
         cogs = '\n'.join(self.loaded_cogs)
+        servers = len(self.guilds)
         embed = selfcord.Embed(
-            description=f'\n**COGS:**\n{cogs}',
-            color=selfcord.Color.magenta()
+            color=selfcord.Color.light_gray(),
+            timestamp=datetime.now()
         )
+        embed.add_field(name='Guilds', value=f'connected to **{servers} guilds**', inline=False)
+        embed.add_field(name='Loaded Cogs', value=cogs)
         WB.send(
             username=self.user.display_name,
             avatar_url=self.user.display_avatar.url,

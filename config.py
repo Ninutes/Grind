@@ -6,7 +6,7 @@ load_dotenv(find_dotenv(raise_error_if_not_found=True))
 
 def is_me():
     async def predicate(ctx: commands.Context):
-        return ctx.author.id == GLOBAL.get_value('userID') or ctx.author.id in GLOBAL.get_value('allowedID')
+        return ctx.author.id == GLOBAL.get_value('user.ID') or ctx.author.id in GLOBAL.get_value('allowedID')
     return commands.check(predicate)
 
 class Config:

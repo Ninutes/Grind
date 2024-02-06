@@ -38,16 +38,16 @@ class Stats(commands.Cog):
             stats = owo_stats.get(flag)
         else:
             stats = GLOBAL.get_value('OwO')
-        await ctx.send(f"> {flag if flag is not None else 'your'} stats\n```{stats}```", delete_after=5)
+        LOG.info(f"> {flag if flag is not None else 'your'} stats\n```{stats}```", delete_after=5)
     @commands.Cog.listener()
     async def on_message(self, message : selfcord.Message):
-        if message.author.id == GLOBAL.get_value('userID'):
+        if message.author.id == GLOBAL.get_value('user.ID'):
             command = message.content.lower()
             if command in commands_mapping:
                 for key in commands_mapping[command]:
                     GLOBAL.set_owostats(key)
         
-    @tasks.loop(time=time(hour=8))
+    @tasks.loop(time=time(hour=7))
     async def reset_owostats(self):
         if datetime.hour == 7:
             LOG.info(f"**Your Daily OwO**\n```{GLOBAL.get_value('OwO.daily')}```")

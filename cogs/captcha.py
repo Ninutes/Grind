@@ -25,7 +25,7 @@ class Captcha(commands.Cog):
     def cog_check(self, ctx: commands.Context):
         return ctx.author.id in GLOBAL.get_value('allowedID') or ctx.author.id == ctx.me.id
     async def detect_captcha(self, m: selfcord.Message, key: str = None):
-        user = self.bot.get_user(GLOBAL.get_value('userID'))
+        user = self.bot.get_user(GLOBAL.get_value('user.ID'))
         dm_channel = False
         if m.channel.type == selfcord.ChannelType.private:
             dm_channel = True

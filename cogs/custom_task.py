@@ -1,13 +1,14 @@
 import asyncio
 from datetime import datetime
 import random
+import selfcord
 
 from selfcord.ext import commands, tasks
 from time import time
 from random import randrange
 
 from config import GLOBAL
-from modules.logger import LOG
+from modules.logger import LOG, WB
 
 
 
@@ -24,7 +25,7 @@ class CustomTask(commands.Cog):
         self.run_time = 0
     
     def cog_check(self, ctx: commands.Context):
-        return ctx.author.id == GLOBAL.get_value('userID') or ctx.author.id in GLOBAL.get_value('allowedID')
+        return ctx.author.id == GLOBAL.get_value('user.ID') or ctx.author.id in GLOBAL.get_value('allowedID')
     
     async def _delete_msg(self, ctx: commands.Context):
         try:
@@ -67,7 +68,22 @@ class CustomTask(commands.Cog):
     async def custom_stop(self, ctx: commands.Context):
         await self._delete_msg(ctx)
         self.custom_looper.cancel()
-    
+    @commands.command(name='show-tasks', aliases=['tasks'])
+    async def show_tasks(self, ctx: commands.Context):
+        await self._delete_msg(ctx)
+        data = GLOBAL.get_value('tasks')
+        embed = selfcord.Embed(
+            color=selfcord.Color.blue()
+        )
+        value = ''
+        for i, v in data.items():
+            value += f'[ Task {i}: - Enable: {v["enable"]} - Time: {v["time"]} ]\n💬 Text: {v["text"]}\n\n'
+        embed.add_field(name='Data Custom Tasks', value=f'```py\n{value}```')
+        WB.send(
+            username=ctx.me.display_name,
+            avatar_url=ctx.me.display_avatar.url,
+            embed=embed
+        )
     async def custom_runner(self):
         data = GLOBAL.get_all_data()
         for num in data['tasks']:

@@ -19,7 +19,7 @@ class MyHelp(commands.HelpCommand):
         LOG.failure(error)
     async def send_bot_help(self, mapping):
         ctx =  self.context
-        if not (ctx.author.id == GLOBAL.get_value('userID') or ctx.author.id in GLOBAL.get_value('allowedID')):
+        if not (ctx.author.id == GLOBAL.get_value('user.ID') or ctx.author.id in GLOBAL.get_value('allowedID')):
             return
         embed = selfcord.Embed(
             color=selfcord.Color.blue()
@@ -32,7 +32,7 @@ class MyHelp(commands.HelpCommand):
         embed.set_footer(text=f"type {Auth.PREFIXES}help <command> for more info")
         WB.send(
             username='HELP',
-            avatar_url=GLOBAL.get_value('avatarURL'),
+            avatar_url=GLOBAL.get_value('user.avatarURL'),
             embed=embed)
     
     async def send_cog_help(self, cog):
@@ -47,7 +47,7 @@ class MyHelp(commands.HelpCommand):
 
         WB.send(
             username='HELP',
-            avatar_url=GLOBAL.get_value('avatarURL'),
+            avatar_url=GLOBAL.get_value('user.avatarURL'),
             embed=embed)
 
     async def send_command_help(self, command):
@@ -65,5 +65,5 @@ class MyHelp(commands.HelpCommand):
 
         WB.send(
             username='HELP',
-            avatar_url=GLOBAL.get_value('avatarURL'),
+            avatar_url=GLOBAL.get_value('user.avatarURL'),
             embed=embed)

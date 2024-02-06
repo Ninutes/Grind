@@ -38,32 +38,32 @@ class Utility(commands.Cog):
         await self._delete_msg(ctx)
         msg = await ctx.channel.fetch_message(int(msgID))
         if msg.embeds:
-            await ctx.send(f'```py\n{msg.embeds[0].to_dict()}```')
+            LOG.info(f'```py\n{msg.embeds[0].to_dict()}```')
         else:
-            await ctx.send(f'```py\n{msg.content}```')
+            LOG.info(f'```py\n{msg.content}```')
     @commands.command()
     async def reload(self, ctx: commands.Context, *, cog: str):
         await self._delete_msg(ctx)
         try:
             await self.bot.reload_extension(f"cogs.{cog}")
-            await ctx.send(content=f"`✅` **{cog.upper()}** cog reloaded", delete_after=3)
+            LOG.info(f"`✅` **{cog.upper()}** cog reloaded")
         except Exception as e:
-            await ctx.send(content=f"`❌` Failed to reload **{cog.upper()}** cog\n{e}", delete_after=3)
+            LOG.info(f"`❌` Failed to reload **{cog.upper()}** cog\n{e}")
     @commands.command()
     async def load(self, ctx: commands.Context, *, cog: str):
         await self._delete_msg(ctx)
         try:
             await self.bot.load_extension(f"cogs.{cog}")
-            await ctx.send(content=f"`✅` **{cog.upper()}** cog loaded", delete_after=3)
+            LOG.info(f"`✅` **{cog.upper()}** cog loaded")
         except Exception as e:
-            await ctx.send(content=f"`❌` Failed to load **{cog.upper()}** cog\n{e}", delete_after=3)
+            LOG.info(f"`❌` Failed to load **{cog.upper()}** cog\n{e}")
     @commands.command()
     async def unload(self, ctx: commands.Context, *, cog: str):
         await self._delete_msg(ctx)
         try:
             await self.bot.unload_extension(f"cogs.{cog}")
-            await ctx.send(content=f"`✅` **{cog.upper()}** cog unloaded", delete_after=3)
+            LOG.info(content=f"`✅` **{cog.upper()}** cog unloaded")
         except Exception as e:
-            await ctx.send(content=f"`❌` Failed to unload **{cog.upper()}** cog\n{e}", delete_after=3)
+            LOG.info(f"`❌` Failed to unload **{cog.upper()}** cog\n{e}")
 async def setup(bot):
     await bot.add_cog(Utility(bot))

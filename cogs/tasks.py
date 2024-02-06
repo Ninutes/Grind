@@ -56,7 +56,7 @@ class Tasks(commands.Cog):
         hours = days * 24 + seconds // 3600
         minutes = (seconds % 3600) // 60
         seconds = seconds % 60
-        if self.custom_counter != 0:
+        if self.custom_run != 0:
             return LOG.info(f'`⛔` stopping self-bot after running **{self._counter}** battles in **{hours}H {minutes}M {seconds}S**')
         return LOG.info(f'`⛔` stopping self-bot after running in **{hours}H {minutes}M {seconds}S**')
     
@@ -77,7 +77,7 @@ class Tasks(commands.Cog):
         if not message.channel.id == GLOBAL.get_value('channelID'):
             return
         if self.sleep or GLOBAL.is_captcha:return
-        if message.author.id == GLOBAL.get_value('userID') and message.content.startswith('owoh'):
+        if message.author.id == GLOBAL.get_value('user.ID') and message.content.startswith('owoh'):
             try:
                 await self.bot.wait_for(
                     'message',
@@ -91,8 +91,6 @@ class Tasks(commands.Cog):
     
     @commands.command(aliases=['start', 'resume'])
     async def start_grind(self, ctx: commands.Context, count: Optional[int] = None):
-        if count:
-            self.custom_run = count
         
         self._counter = 0
         self.run_time = datetime.now()
@@ -104,8 +102,8 @@ class Tasks(commands.Cog):
         
         desc = f'`🟢` starting self-bot in {ctx.channel.jump_url}'
         if count:
-            self.custom_counter = count
-            desc += f'\n and will automatically stop after {count} battles reached'
+            self.custom_run = count
+            desc += f'\nand will stop after {count} battles reached'
         LOG.info(desc)
     
     @commands.command(aliases=['stop', 'pause'])
@@ -240,7 +238,7 @@ class Tasks(commands.Cog):
     
     @runner.after_loop
     async def runner_after_loop(self):
-        if self.custom_run != 0 and not GLOBAL.is_captcha:
+        if not GLOBAL.is_captcha:
             await self.counter_time()
 async def setup(bot):
     await bot.add_cog(Tasks(bot))

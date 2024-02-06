@@ -27,9 +27,9 @@ def send_tele(content):
 class Log:
     
     def __init__(self):
-        self.username = GLOBAL.get_value('username')
-        self.avatarURL = GLOBAL.get_value('avatarURL')
-        self.wb_ping = GLOBAL.get_value('webhook.ping')
+        self.username = GLOBAL.get_value('user.username')
+        self.avatarURL = GLOBAL.get_value('user.avatarURL')
+        self.wb_ping = GLOBAL.get_value('webhook.ping', GLOBAL.get_value('user.ID'))
         pass
     
     def captcha(self, message: selfcord.Message, key : str, fail: Optional[str] = None):
@@ -66,7 +66,7 @@ class Log:
         embed.add_field(name=b_embed.fields[1].name, value=b_embed.fields[1].value)
         embed.set_footer(text=b_embed.footer.text)
         WB.send(
-            content=f'<@{self.wb_ping}> You\'ve lost your lucky in {message.jump_url}',
+            content=f'<@{self.wb_ping}> I\'ve got something in {message.jump_url}',
             username=message.author.name,
             avatar_url=message.author.avatar.url,
             embed=embed,

@@ -25,6 +25,7 @@ class Events(commands.Cog):
             LOG.failure(error)
         elif isinstance(error, commands.errors.CommandInvokeError):
             LOG.failure(error)
+        raise error
     @commands.Cog.listener()
     async def on_message(self, message: selfcord.Message):
         if message.channel.type == selfcord.ChannelType.private:

@@ -1,8 +1,9 @@
+from typing import Optional
 from selfcord.ext import commands
 import selfcord
 
 from config import GLOBAL
-from modules.logger import LOG
+from modules.logger import LOG, WB
 
 
 class CMD(commands.Cog):
@@ -53,8 +54,37 @@ class CMD(commands.Cog):
         msg = await ctx.fetch_message(msgID)
         return LOG.battle(msg, 'win', 80)
     @commands.command(aliases=['config'], description='Show self-bot configuration')
-    async def config_show(self, ctx):
+    async def config_show(self, ctx:commands.Context, all:Optional[str] = None):
         await self._delete_msg(ctx)
+        if all == 'all':
+            embed = selfcord.Embed(
+                title=f'Configurations',
+                color=selfcord.Color.blue()
+            )
+            data = GLOBAL.get_all_data()
+            for key, value in data.items():
+                inline = False if key in ['OwO', 'user', 'tasks', 'webhook'] else True
+                if key == 'OwO':
+                    owo = f'''```py\n
+- Daily:   OwO: {value["daily"]["owo"]}, Hunt: {value["daily"]["hunt"]}, Battle: {value["daily"]["battle"]}
+- Weekly:  OwO: {value["weekly"]["owo"]}, Hunt: {value["weekly"]["hunt"]}, Battle: {value["weekly"]["battle"]}
+- Monthly: OwO: {value["monthly"]["owo"]}, Hunt: {value["monthly"]["hunt"]}, Battle: {value["monthly"]["battle"]}
+- Total:   OwO: {value["total"]["owo"]}, Hunt: {value["total"]["hunt"]}, Battle: {value["total"]["battle"]}
+```'''
+                    embed.add_field(name=key, value=owo, inline=inline)
+                elif key == 'tasks':
+                    fstring = ''
+                    for i, v in value.items():
+                        fstring += f'[ Task {i}: - Enable: {v["enable"]} - Time: {v["time"]} ]\n💬 Text: {v["text"]}\n'
+                    embed.add_field(name=key, value=f'```py\n{fstring}```', inline=inline)
+                else:
+                    embed.add_field(name=key, value=f'```py\n{value}```', inline=inline)
+            
+            return WB.send(
+                username=ctx.me.display_name,
+                avatar_url=ctx.me.display_avatar.url,
+                embed=embed,
+            )
         return LOG.log_config()
     @commands.command(aliases=['but'])
     async def click_button(self, ctx: commands.Context, key: str):
