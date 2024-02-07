@@ -2,27 +2,39 @@
 import datetime
 from typing import Optional
 import selfcord
-from selfcord import Embed
+from selfcord import Embed, Webhook
 
 from config import GLOBAL, Auth
 from twocaptcha import TwoCaptcha
 from requests import post
-WB = selfcord.SyncWebhook.from_url(GLOBAL.get_value('webhook.URL'))
-WB_captcha = selfcord.SyncWebhook.from_url(GLOBAL.get_value('webhook.captchaURL'))
-def get_balance():
+import aiohttp
+
+
+async def _webhook(msg: selfcord.Message = None, content: str = None, embed: Embed = None, type: str = 'log'):
+    url = GLOBAL.get_value('webhook.URL') if type == 'log' else GLOBAL.get_value('webhook.captchaURL')
+    async with aiohttp.ClientSession() as session:
+        webhook = Webhook.from_url(url, session=session)
+        await webhook.send(
+            content=content,
+            username=msg.author.name if msg else GLOBAL.get_value('user.username'),
+            avatar_url=msg.author.avatar.url if msg else GLOBAL.get_value('user.avatarURL'),
+            embed=embed
+        )
+
+async def get_balance():
     try:
         two_captcha = TwoCaptcha(Auth.APIKEY)
         if two_captcha:
             balance = two_captcha.balance()
             return round(balance, 1)
     except Exception as e:
-        LOG.failure(e)
+        await LOG.failure(e)
 
-def send_tele(content):
+async def send_tele(content):
     try:
         post(url=f"https://api.telegram.org/{Auth.TELEAPI}/sendMessage?chat_id={GLOBAL.get_value('tele.chatID')}&text={content}&parse_mode=MarkdownV2")
     except Exception as e:
-        LOG.failure(e)
+        await LOG.failure(e)
 
 class Log:
     
@@ -32,8 +44,8 @@ class Log:
         self.wb_ping = GLOBAL.get_value('webhook.ping', GLOBAL.get_value('user.ID'))
         pass
     
-    def captcha(self, message: selfcord.Message, key : str, fail: Optional[str] = None):
-        balance = get_balance()
+    async def captcha(self, message: selfcord.Message, key : str, fail: Optional[str] = None):
+        balance = await get_balance()
         flag = '✅' if key == 'solved' else '❌' if key == 'not solved' else '⚠️'
         color = selfcord.Color.green() if key == 'solved' else selfcord.Color.red()
         embed = Embed(
@@ -49,15 +61,16 @@ class Log:
         if message.attachments:
             embed.set_image(url=message.attachments[0].url)
         if key in ['not solved', 'detected']:
-            send_tele('⚠️ Captcha detected')
-        return WB_captcha.send(
+            await send_tele('⚠️ Captcha detected')
+        
+        await _webhook(
             content=f'<@{self.wb_ping}>',
-            username=self.username,
-            avatar_url=self.avatarURL,
-            embed=embed,  
+            embed=embed,
+            type='captcha'
         )
+
     
-    def battle(self, message : selfcord.Message, key:str, value: int):
+    async def battle(self, message : selfcord.Message, key:str, value: int):
         b_embed = message.embeds[0]
         embed = Embed(
             color=b_embed.color
@@ -65,90 +78,80 @@ class Log:
         embed.add_field(name=b_embed.fields[0].name, value=b_embed.fields[0].value)
         embed.add_field(name=b_embed.fields[1].name, value=b_embed.fields[1].value)
         embed.set_footer(text=b_embed.footer.text)
-        WB.send(
+        await _webhook(
+            msg=message,
             content=f'<@{self.wb_ping}> I\'ve got something in {message.jump_url}',
-            username=message.author.name,
-            avatar_url=message.author.avatar.url,
             embed=embed,
         )
         if key ==  'lost':
-            return LOG.failure(f'You\'ve lost your streak of **{value}** win')
-        return LOG.success(f'You\'ve reach **{value}** win streak!')
-    def pets(self, message : selfcord.Message):
+            return await LOG.failure(f'You\'ve lost your streak of **{value}** win')
+        return await LOG.success(f'You\'ve reach **{value}** win streak!')
+
+    async def pets(self, message : selfcord.Message):
         embed = Embed(
             description=message.content,
             timestamp=message.created_at,
             color=selfcord.Color.green()
         )
-        WB.send(
+        await _webhook(
+            msg=message,
             content=f'<@{self.wb_ping}>',
-            username=message.author.name,
-            avatar_url=message.author.display_avatar.url,
             embed=embed,
         )
     
-    def huntbot(self, message: selfcord.Message):
+    async def huntbot(self, message: selfcord.Message):
         embed = Embed(
             description=message.content,
             timestamp=message.created_at,
             color=selfcord.Color.blue()
         )
-        WB.send(
+        await _webhook(
+            msg=message,
             content=f'<@{self.wb_ping}>',
-            username=message.author.name,
-            avatar_url=message.author.display_avatar.url,
             embed=embed,
         )
-    def success(self, reason : str):
+    async def success(self, reason : str):
         color = selfcord.Color.green()
         embed = Embed(
             description=reason,
             timestamp=datetime.datetime.now(),
             color=color
         )
-        return WB.send(
-            username=self.username,
-            avatar_url=self.avatarURL,
+        await _webhook(
             embed=embed,  
         )
-    def failure(self, reason : str):
+    async def failure(self, reason : str):
         color = selfcord.Color.red()
         embed = Embed(
             description=reason,
             timestamp=datetime.datetime.now(),
             color=color
         )
-        return WB.send(
-            username=self.username,
-            avatar_url=self.avatarURL,
+        await _webhook(
             embed=embed,  
         )
-    def info(self, reason : str):
+    async def info(self, reason : str):
         color = selfcord.Color.green()
         embed = Embed(
             description=reason,
             timestamp=datetime.datetime.now(),
             color=color
         )
-        return WB.send(
-            username=self.username,
-            avatar_url=self.avatarURL,
+        await _webhook(
             embed=embed,  
         )
-    def warning(self, reason : str):
+    async def warning(self, reason : str):
         color = selfcord.Color.gold()
         embed = Embed(
             description=reason,
             timestamp=datetime.datetime.now(),
             color=color
         )
-        return WB.send(
-            username=self.username,
-            avatar_url=self.avatarURL,
+        await _webhook(
             embed=embed,  
         )
 
-    def log_config(self):
+    async def log_config(self):
         data = GLOBAL.get_all_data()
         if data:
             channel = GLOBAL.g_channel.id if GLOBAL.g_channel is not None else GLOBAL.get_value('channelID')
@@ -163,22 +166,18 @@ class Log:
             description=f'**CONFIG**\n{config}',
             color=selfcord.Color.blue()
         )
-        WB.send(
+        await _webhook(
             content=f'> **I am here : [ <#{channel}> ] **',
-            username=self.username,
-            avatar_url=self.avatarURL,
             embed=embed
         )
     
-    def log_avatar(self, user : selfcord.Member):
+    async def log_avatar(self, user : selfcord.Member):
         embed = Embed(
             color=selfcord.Color.random()
         )
-        embed.set_author(name=f'avatar')
+        embed.set_author(name=f'{user.name} avatar')
         embed.set_image(url=user.display_avatar.url)
-        WB.send(
-            username=user.name,
-            avatar_url=user.display_avatar.url,
+        await _webhook(
             embed=embed
         )
 LOG = Log()

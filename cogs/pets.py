@@ -56,11 +56,11 @@ class Pets(commands.Cog):
         if pets:
             pets = pets.groups(1)
             if any(pet.strip() in HIDDEN for pet in pets[0].split()):
-                return LOG.pets(message)
+                return await LOG.pets(message)
             if any(pet.strip() in FABLED for pet in pets[0].split()):
-                return LOG.pets(message)
+                return await LOG.pets(message)
             if any(pet.strip() in DISTORTED for pet in pets[0].split()):
-                return LOG.pets(message)
+                return await LOG.pets(message)
     @commands.Cog.listener()
     async def on_message(self, message: selfcord.Message):
         if not message.channel.id == GLOBAL.get_value('channelID'):
@@ -78,9 +78,9 @@ class Pets(commands.Cog):
                     match_win = re.search(self.regex_win, footer)
                     match_lost = re.search(self.regex_lost, footer)
                     if match_win:
-                        return LOG.battle(message, 'win', int(match_win.group(1)) )
+                        return await LOG.battle(message, 'win', int(match_win.group(1)) )
                     elif match_lost:
-                        return LOG.battle(message, 'lost', int(match_lost.group(1)) )
+                        return await LOG.battle(message, 'lost', int(match_lost.group(1)) )
 
 async def setup(bot):
     await bot.add_cog(Pets(bot))

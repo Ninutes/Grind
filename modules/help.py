@@ -2,7 +2,7 @@ import selfcord
 from selfcord.ext import commands
 
 from config import GLOBAL, Auth
-from modules.logger import LOG, WB
+from modules.logger import LOG, _webhook
 
 
 class MyHelp(commands.HelpCommand):
@@ -16,7 +16,7 @@ class MyHelp(commands.HelpCommand):
         self.command_attrs = attributes
 
     async def send_error_message(self, error):
-        LOG.failure(error)
+        await LOG.failure(error)
     async def send_bot_help(self, mapping):
         ctx =  self.context
         if not (ctx.author.id == GLOBAL.get_value('user.ID') or ctx.author.id in GLOBAL.get_value('allowedID')):
@@ -30,9 +30,7 @@ class MyHelp(commands.HelpCommand):
         embed.add_field(name="Captcha", value="`dms`", inline=False)
         embed.add_field(name="Settings", value="`config`, `set`, `die`, `load`, `unload`, `reload` ", inline=False)
         embed.set_footer(text=f"type {Auth.PREFIXES}help <command> for more info")
-        WB.send(
-            username='HELP',
-            avatar_url=GLOBAL.get_value('user.avatarURL'),
+        await _webhook(
             embed=embed)
     
     async def send_cog_help(self, cog):
@@ -45,9 +43,7 @@ class MyHelp(commands.HelpCommand):
             embed.add_field(
                 name=command.name, value=command.short_doc or "No description available.", inline=False)
 
-        WB.send(
-            username='HELP',
-            avatar_url=GLOBAL.get_value('user.avatarURL'),
+        await _webhook(
             embed=embed)
 
     async def send_command_help(self, command):
@@ -63,7 +59,5 @@ class MyHelp(commands.HelpCommand):
             embed.set_footer(
                 text=f"type {Auth.PREFIXES}help <command> for more info")
 
-        WB.send(
-            username='HELP',
-            avatar_url=GLOBAL.get_value('user.avatarURL'),
+        await _webhook(
             embed=embed)

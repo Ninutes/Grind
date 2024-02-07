@@ -57,8 +57,8 @@ class Tasks(commands.Cog):
         minutes = (seconds % 3600) // 60
         seconds = seconds % 60
         if self.custom_run != 0:
-            return LOG.info(f'`⛔` stopping self-bot after running **{self._counter}** battles in **{hours}H {minutes}M {seconds}S**')
-        return LOG.info(f'`⛔` stopping self-bot after running in **{hours}H {minutes}M {seconds}S**')
+            return await LOG.info(f'`⛔` stopping self-bot after running **{self._counter}** battles in **{hours}H {minutes}M {seconds}S**')
+        return await LOG.info(f'`⛔` stopping self-bot after running in **{hours}H {minutes}M {seconds}S**')
     
     def start_task(self):
         if self.runner.is_running():
@@ -86,7 +86,7 @@ class Tasks(commands.Cog):
                 )
             except asyncio.TimeoutError:
                 self.runner.cancel()
-                LOG.failure(f'self-bot stopped because OwO didn\'t respond after 30 seconds')
+                await LOG.failure(f'self-bot stopped because OwO didn\'t respond after 30 seconds')
                 pass
     
     @commands.command(aliases=['start', 'resume'])
@@ -104,7 +104,7 @@ class Tasks(commands.Cog):
         if count:
             self.custom_run = count
             desc += f'\nand will stop after {count} battles reached'
-        LOG.info(desc)
+        await LOG.info(desc)
     
     @commands.command(aliases=['stop', 'pause'])
     async def stop_grinding(self, ctx: commands.Context):
@@ -115,7 +115,7 @@ class Tasks(commands.Cog):
     async def change_channel(self, ctx: commands.Context):
         await self._delete_msg(ctx)
         GLOBAL.set_channel(ctx.channel)
-        return LOG.success(f'change channel to {ctx.channel.jump_url}')
+        return await LOG.success(f'change channel to {ctx.channel.jump_url}')
     
     @commands.command()
     async def cek(self, ctx: commands.Context):
@@ -200,7 +200,7 @@ class Tasks(commands.Cog):
         ):
             await GLOBAL.g_channel.typing()
             await asyncio.sleep(self.delay)
-            await GLOBAL.g_channel.send(f"{prefix}{data['text']} {data['text2']}")
+            await GLOBAL.g_channel.send(f"{prefix}{data['text']}")
             self.custom_time = time()
     async def runner_sleep(self):
         data = GLOBAL.get_value('sleep')

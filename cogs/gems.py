@@ -31,7 +31,7 @@ class Gems(commands.Cog):
             GLOBAL.set_value('gem', False)
         else:
             GLOBAL.set_value('gem', True)
-        LOG.success(f'**GEMS MODE** set to: %s' % GLOBAL.get_value('gem'))
+        await LOG.success(f'**GEMS MODE** set to: %s' % GLOBAL.get_value('gem'))
     @commands.Cog.listener()
     async def on_message(self, message: selfcord.Message):
         if self.is_myhunt(message):

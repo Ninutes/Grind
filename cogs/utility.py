@@ -28,7 +28,7 @@ class Utility(commands.Cog):
     @commands.command(aliases=['restart'])
     async def die(self, ctx: commands.Context):
         await self._delete_msg(ctx)
-        LOG.info(f'restarting self-bot')
+        await LOG.info(f'restarting self-bot')
         await self.bot.close()
         looper = asyncio.get_event_loop()
         looper.stop()
@@ -41,32 +41,32 @@ class Utility(commands.Cog):
         await self._delete_msg(ctx)
         msg = await ctx.channel.fetch_message(int(msgID))
         if msg.embeds:
-            LOG.info(f'```py\n{msg.embeds[0].to_dict()}```')
+            await LOG.info(f'```py\n{msg.embeds[0].to_dict()}```')
         else:
-            LOG.info(f'```py\n{msg.content}```')
+            await LOG.info(f'```py\n{msg.content}```')
     @commands.command()
     async def reload(self, ctx: commands.Context, *, cog: str):
         await self._delete_msg(ctx)
         try:
             await self.bot.reload_extension(f"cogs.{cog}")
-            LOG.info(f"`✅` **{cog.upper()}** cog reloaded")
+            await LOG.info(f"`✅` **{cog.upper()}** cog reloaded")
         except Exception as e:
-            LOG.info(f"`❌` Failed to reload **{cog.upper()}** cog\n{e}")
+            await LOG.info(f"`❌` Failed to reload **{cog.upper()}** cog\n{e}")
     @commands.command()
     async def load(self, ctx: commands.Context, *, cog: str):
         await self._delete_msg(ctx)
         try:
             await self.bot.load_extension(f"cogs.{cog}")
-            LOG.info(f"`✅` **{cog.upper()}** cog loaded")
+            await LOG.info(f"`✅` **{cog.upper()}** cog loaded")
         except Exception as e:
-            LOG.info(f"`❌` Failed to load **{cog.upper()}** cog\n{e}")
+            await LOG.info(f"`❌` Failed to load **{cog.upper()}** cog\n{e}")
     @commands.command()
     async def unload(self, ctx: commands.Context, *, cog: str):
         await self._delete_msg(ctx)
         try:
             await self.bot.unload_extension(f"cogs.{cog}")
-            LOG.info(f"`✅` **{cog.upper()}** cog unloaded")
+            await LOG.info(f"`✅` **{cog.upper()}** cog unloaded")
         except Exception as e:
-            LOG.info(f"`❌` Failed to unload **{cog.upper()}** cog\n{e}")
+            await LOG.info(f"`❌` Failed to unload **{cog.upper()}** cog\n{e}")
 async def setup(bot):
     await bot.add_cog(Utility(bot))

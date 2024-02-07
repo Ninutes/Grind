@@ -5,10 +5,9 @@ import selfcord
 
 from selfcord.ext import commands, tasks
 from time import time
-from random import randrange
 
 from config import GLOBAL
-from modules.logger import LOG, WB
+from modules.logger import LOG, _webhook
 
 
 
@@ -38,18 +37,18 @@ class CustomTask(commands.Cog):
         hours = days * 24 + seconds // 3600
         minutes = (seconds % 3600) // 60
         seconds = seconds % 60
-        return LOG.info(f'`⛔` stopping custom tasks after running in **{hours}H {minutes}M {seconds}S**')
+        return await LOG.info(f'`⛔` stopping custom tasks after running in **{hours}H {minutes}M {seconds}S**')
     
     @commands.command(name='custom')
     async def custom_tasks(self, ctx :commands.Context, task_number:int, key: str, *, value: str):
         await self._delete_msg(ctx)
         data = GLOBAL.get_all_data('tasks')
         if task_number not in data:
-            return LOG.failure(f'{task_number} is not a valid task. available tasks:{[task for task in data]}')
+            return await LOG.failure(f'{task_number} is not a valid task. available tasks:{[task for task in data]}')
         if key not in data[task_number]:
-            return LOG.failure(f'{key} is not a valid key. available keys:{[key for key in data[task_number]]}')
+            return await LOG.failure(f'{key} is not a valid key. available keys:{[key for key in data[task_number]]}')
         GLOBAL.set_value(f'{task_number}.{key}', value)
-        LOG.success(f'**TASK {task_number}** has been updated {key}  : {value}')
+        await LOG.success(f'**TASK {task_number}** has been updated {key}  : {value}')
     
     @commands.command(aliases=['cstart', 'custom-start'])
     async def custom_start(self, ctx: commands.Context):
@@ -63,7 +62,7 @@ class CustomTask(commands.Cog):
         
         self.custom_looper.start()
         
-        LOG.info(f'Starting custom task in {self.c_channel.jump_url}')
+        await LOG.info(f'Starting custom task in {self.c_channel.jump_url}')
     @commands.command(aliases=['cstop', 'custom-stop'])
     async def custom_stop(self, ctx: commands.Context):
         await self._delete_msg(ctx)
@@ -79,9 +78,7 @@ class CustomTask(commands.Cog):
         for i, v in data.items():
             value += f'[ Task {i}: - Enable: {v["enable"]} - Time: {v["time"]} ]\n💬 Text: {v["text"]}\n\n'
         embed.add_field(name='Data Custom Tasks', value=f'```py\n{value}```')
-        WB.send(
-            username=ctx.me.display_name,
-            avatar_url=ctx.me.display_avatar.url,
+        await _webhook(
             embed=embed
         )
     async def custom_runner(self):

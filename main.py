@@ -12,7 +12,7 @@ import selfcord
 from selfcord.ext import commands
 from pycolorise.colors import *
 from config import GLOBAL, Auth
-from modules.logger import WB
+from modules.logger import _webhook
 from modules.help import MyHelp
 
 load_dotenv(find_dotenv(raise_error_if_not_found=True))
@@ -68,9 +68,7 @@ class Grind(commands.Bot):
         )
         embed.add_field(name='Guilds', value=f'connected to **{servers} guilds**', inline=False)
         embed.add_field(name='Loaded Cogs', value=cogs)
-        WB.send(
-            username=self.user.display_name,
-            avatar_url=self.user.display_avatar.url,
+        await _webhook(
             embed=embed,  
         )
 

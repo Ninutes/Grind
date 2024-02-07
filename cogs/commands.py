@@ -3,7 +3,7 @@ from selfcord.ext import commands
 import selfcord
 
 from config import GLOBAL
-from modules.logger import LOG, WB
+from modules.logger import LOG, _webhook
 
 
 class CMD(commands.Cog):
@@ -22,7 +22,7 @@ class CMD(commands.Cog):
     @commands.command(aliases=['av'])
     async def avatar(self, ctx : commands.Context, user : selfcord.User):
         await self._delete_msg(ctx)
-        LOG.log_avatar(user)
+        await LOG.log_avatar(user)
     @commands.command()
     async def say(self, ctx: commands.Context, *, message: str):
         await self._delete_msg(ctx)
@@ -32,7 +32,7 @@ class CMD(commands.Cog):
         await self._delete_msg(ctx)
         GLOBAL.set_value('prefix', prefix)
         self.bot.command_prefix = prefix
-        LOG.success(f'prefix set to `{prefix}`')
+        await LOG.success(f'prefix set to `{prefix}`')
     @commands.command(aliases=['math', 'calc'])
     async def math_calc(self, ctx: commands.Context, *, expression):
         await self._delete_msg(ctx)
@@ -47,12 +47,12 @@ class CMD(commands.Cog):
             value = True if value.lower() == 'on' else False if value.lower() == 'off' else value
         await self._delete_msg(ctx)
         GLOBAL.set_value(key, value)
-        return LOG.success(f'Successfully set **{key}** to `{value}`')
+        return await LOG.success(f'Successfully set **{key}** to `{value}`')
     @commands.command()
     async def tes_embed(self, ctx: commands.Context, msgID: int):
         await self._delete_msg(ctx)
         msg = await ctx.fetch_message(msgID)
-        return LOG.battle(msg, 'win', 80)
+        return await LOG.battle(msg, 'win', 80)
     @commands.command(aliases=['config'], description='Show self-bot configuration')
     async def config_show(self, ctx:commands.Context, all:Optional[str] = None):
         await self._delete_msg(ctx)
@@ -80,12 +80,10 @@ class CMD(commands.Cog):
                 else:
                     embed.add_field(name=key, value=f'```py\n{value}```', inline=inline)
             
-            return WB.send(
-                username=ctx.me.display_name,
-                avatar_url=ctx.me.display_avatar.url,
+            return await _webhook(
                 embed=embed,
             )
-        return LOG.log_config()
+        return await LOG.log_config()
     @commands.command(aliases=['but'])
     async def click_button(self, ctx: commands.Context, key: str):
         await self._delete_msg(ctx)

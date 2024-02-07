@@ -38,7 +38,7 @@ class Stats(commands.Cog):
             stats = owo_stats.get(flag)
         else:
             stats = GLOBAL.get_value('OwO')
-        LOG.info(f"> {flag if flag is not None else 'your'} stats\n```{stats}```")
+        await LOG.info(f"> {flag if flag is not None else 'your'} stats\n```{stats}```")
     @commands.Cog.listener()
     async def on_message(self, message : selfcord.Message):
         if message.author.id == GLOBAL.get_value('user.ID'):
@@ -50,15 +50,15 @@ class Stats(commands.Cog):
     @tasks.loop(time=time(hour=7))
     async def reset_owostats(self):
 
-        LOG.info(f"**Your Daily OwO**\n```{GLOBAL.get_value('OwO.daily')}```")
+        await LOG.info(f"**Your Daily OwO**\n```{GLOBAL.get_value('OwO.daily')}```")
         await asyncio.sleep(1)
         GLOBAL.reset_owostats('daily')
         if datetime.now().weekday() == 0:
-            LOG.info(f"**Your Weekly OwO**\n```{GLOBAL.get_value('OwO.weekly')}```")
+            await LOG.info(f"**Your Weekly OwO**\n```{GLOBAL.get_value('OwO.weekly')}```")
             await asyncio.sleep(1)
             GLOBAL.reset_owostats('weekly')
         if datetime.day == 1:
-            LOG.info(f"**Your Monthly OwO**\n```{GLOBAL.get_value('OwO.monthly')}```")
+            await LOG.info(f"**Your Monthly OwO**\n```{GLOBAL.get_value('OwO.monthly')}```")
             await asyncio.sleep(1)
             GLOBAL.reset_owostats('monthly')
     @reset_owostats.before_loop
