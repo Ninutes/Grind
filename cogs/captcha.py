@@ -160,10 +160,10 @@ class Captcha(commands.Cog):
         captcha_msg = None
         await self.owoDM.send(text.lower())
         await asyncio.sleep(5)
+        async for message in GLOBAL.g_channel.history(limit=10):
+            if 'captcha' in message.content.lower() and message.attachments:
+                captcha_msg = message
         async for msg in self.owoDM.history(limit=1):
-            async for message in GLOBAL.g_channel.history(limit=10):
-                if 'captcha' in message.content.lower() and message.attachments:
-                    captcha_msg = message
             if 'verified' in msg.content.lower():
                 dmcontent = re.search(self.regex_box, msg.content)
                 if dmcontent:
