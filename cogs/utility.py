@@ -35,7 +35,7 @@ class Utility(commands.Cog):
     @commands.command()
     async def tes_tele(self, ctx: commands.Context, msg):
         await self._delete_msg(ctx)
-        return send_tele(msg)
+        return await send_tele(msg)
     @commands.command()
     async def parse(self, ctx: commands.Context, msgID):
         await self._delete_msg(ctx)
