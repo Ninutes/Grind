@@ -65,7 +65,7 @@ class Utility(commands.Cog):
         await self._delete_msg(ctx)
         try:
             await self.bot.unload_extension(f"cogs.{cog}")
-            LOG.info(content=f"`✅` **{cog.upper()}** cog unloaded")
+            LOG.info(f"`✅` **{cog.upper()}** cog unloaded")
         except Exception as e:
             LOG.info(f"`❌` Failed to unload **{cog.upper()}** cog\n{e}")
 async def setup(bot):
