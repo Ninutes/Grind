@@ -8,7 +8,7 @@ from config import GLOBAL, Auth
 from twocaptcha import TwoCaptcha
 from requests import post
 WB = selfcord.SyncWebhook.from_url(GLOBAL.get_value('webhook.URL'))
-
+WB_captcha = selfcord.SyncWebhook.from_url(GLOBAL.get_value('webhook.captchaURL'))
 def get_balance():
     try:
         two_captcha = TwoCaptcha(Auth.APIKEY)
@@ -50,7 +50,7 @@ class Log:
             embed.set_image(url=message.attachments[0].url)
         if key in ['not solved', 'detected']:
             send_tele('⚠️ Captcha detected')
-        return WB.send(
+        return WB_captcha.send(
             content=f'<@{self.wb_ping}>',
             username=self.username,
             avatar_url=self.avatarURL,
