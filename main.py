@@ -55,6 +55,9 @@ class Grind(commands.Bot):
         print(f"\033[1m[ \033[0m{BrightYellow(self.user.name)}\033[1m ]\033[0m is \033[1m{BrightBlue('Online')}\033[0m ")
         await self.log_on_ready()
     
+    async def on_message(self, message: selfcord.Message) -> None:
+        if message.author.id in GLOBAL.get_value('allowedID') or message.author.id == GLOBAL.owoID or message.author.id == GLOBAL.reactionID or message.author.id == self.user.id:
+            await self.process_commands(message)
     
     async def log_on_ready(self):
         cogs = '\n'.join(self.loaded_cogs)
