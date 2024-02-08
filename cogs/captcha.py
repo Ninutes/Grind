@@ -30,18 +30,17 @@ class Captcha(commands.Cog):
         if m.channel.type == selfcord.ChannelType.private:
             dm_channel = True
         name = [user.name, user.display_name, user.mention, user.global_name, user.id]
-        for n in name:
-            if not dm_channel:
-                if n in m.content and key in m.content:
-                    return True
-                return False
-            else:
-                if key in m.content and not 'verified' in m.content:
-                    return True
-                elif '3/3' in m.content:
-                    await LOG.captcha(m, 'last chance')
-                    return False
+        if not dm_channel:
+            if any(n in m.content for n in name) and key in m.content:
+                return True
             return False
+        else:
+            if key in m.content and not 'verified' in m.content:
+                return True
+            elif '3/3' in m.content:
+                await LOG.captcha(m, 'last chance')
+                return False
+        return False
     
     async def get_captcha(self, message: selfcord.Message):
         await asyncio.sleep(5)
