@@ -121,7 +121,7 @@ class Tasks(commands.Cog):
     async def cek(self, ctx: commands.Context):
         await self._delete_msg(ctx)
         channel = self.bot.get_channel(GLOBAL.get_value('channelID'))
-        running = '`⛔`' if self.runner.is_running() else '`🟢`'
+        running = '`🟢`' if self.runner.is_running() else '`⛔`'
         await ctx.send(f'> {running} here {channel.jump_url}', delete_after=10)
     
     async def say_owo(self):
