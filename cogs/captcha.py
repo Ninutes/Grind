@@ -54,7 +54,6 @@ class Captcha(commands.Cog):
                 if GLOBAL.get_value('autosolve'):
                     return await self.get_result(msg, self.captcha_image, self.captcha_length)
                 return await LOG.captcha(msg, 'detected')
-            return await LOG.captcha(msg, 'detected')
     
     async def get_result(self, message : selfcord.Message, image, length):
         solve_time = time()
