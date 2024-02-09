@@ -25,8 +25,10 @@ class Gems(commands.Cog):
         except Exception:
             return
     @commands.command(name='gem')
-    async def set_gem(self, ctx: commands.Context):
+    async def set_gem(self, ctx: commands.Context, use: int = None):
         await self._delete_msg(ctx)
+        if use:
+            return await ctx.send(f'wuse {50 + use} {64 + use} {71 + use}')
         if GLOBAL.get_value('gem'):
             GLOBAL.set_value('gem', False)
         else:
