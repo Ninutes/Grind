@@ -100,12 +100,11 @@ async def main():
             await bot.start(Auth.TOKEN)
     finally:
         await bot.close()
-        looper.stop()
 
 # For most use cases, after defining what needs to run, we can just tell asyncio to run it:
 try:
     asyncio.run(main())
-except KeyboardInterrupt:
-    print(Green("Detected Ctrl + C, Exiting..."))
+except (KeyboardInterrupt, asyncio.exceptions.CancelledError) as e:
+    print(Green(f"{e}\nDetected Ctrl + C, Exiting..."))
 except RuntimeError:
     print(Red("Exiting..."))

@@ -7,7 +7,7 @@ import random
 import os
 from selfcord.ext import commands, tasks
 from time import time
-from random import randrange
+from random import choice, randrange
 
 from config import GLOBAL
 from modules.logger import LOG
@@ -32,17 +32,20 @@ class Tasks(commands.Cog):
         self.sleep = False
         self.custom_run = 0
         self._counter = 0
+        self.random_cmd_time = 0
+        self.on_delay = False
     
     def cog_check(self, ctx: commands.Context):
         return ctx.author.id in GLOBAL.get_value('allowedID') or ctx.author.id == ctx.me.id
     
     async def cog_reload(self):
         if self.runner.is_running():
-            return self.runner.restart()
+            return self.runner.cancel()
         
 
     async def cog_unload(self):
-        return self.runner.cancel()
+        if self.runner.is_running():
+            return self.runner.cancel()
     
     async def _delete_msg(self, ctx: commands.Context):
         try:
@@ -65,10 +68,10 @@ class Tasks(commands.Cog):
             return
         self.runner.start()
 
-    async def delay_task(self):
+    def delay_task(self):
         if self.runner.is_running():
-            await asyncio.sleep(10)
-            return
+            self.on_delay = True
+            self.runner.cancel()
         return
     @commands.Cog.listener()
     async def on_message(self, message: selfcord.Message):
@@ -189,6 +192,20 @@ class Tasks(commands.Cog):
                 await GLOBAL.g_channel.send(random_quotes['quoteText'] + " - " + random_quotes['quoteAuthor'])
             self.exp_time = time()
     
+    async def random_cmd(self):
+        if not GLOBAL.get_value('randomCMD'):
+            return
+        prefix = GLOBAL.get_value('owoprefix')
+        random_cmd = ['w', 'cookie', f'pat <@{GLOBAL.owoID}>', 'teams', 'money', 'patreon', 'ping', 'shards', 'ws', 'color', 'shop']
+        if time() - self.random_cmd_time == time():
+            self.random_cmd_time = time()
+            return
+        if (time() - self.random_cmd_time >= random.randint(120, 1200)
+        and not GLOBAL.is_captcha):
+            await GLOBAL.g_channel.typing()
+            await GLOBAL.g_channel.send(f'{prefix}{random.choice(random_cmd)}')
+            self.random_cmd_time = time()
+    
     async def custom_say(self):
         prefix = GLOBAL.get_value('owoprefix')
         data = GLOBAL.get_value('custom')
@@ -226,7 +243,7 @@ class Tasks(commands.Cog):
             await self.random_exp()
             await self.custom_say()
             await self.runner_sleep()
-            
+            await self.random_cmd()
             if stop:
                 self.runner.cancel()
                 
@@ -234,12 +251,12 @@ class Tasks(commands.Cog):
                 self.runner.cancel()
                 
         except Exception as e:
-            LOG.failure(e)
+            await LOG.failure(e)
             self.runner.cancel()
     
     @runner.after_loop
     async def runner_after_loop(self):
-        if not GLOBAL.is_captcha:
+        if not GLOBAL.is_captcha and not self.on_delay:
             await self.counter_time()
 async def setup(bot):
     await bot.add_cog(Tasks(bot))

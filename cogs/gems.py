@@ -53,6 +53,7 @@ class Gems(commands.Cog):
             await self.use_gems(use)
 
     async def use_gems(self, target = [1,3,4]):
+        runner = self.bot.get_cog('Tasks')
         for index, value in  enumerate(target):
             match value:
                 case 1:
@@ -65,9 +66,8 @@ class Gems(commands.Cog):
             return
         await GLOBAL.g_channel.typing()
         self.checking_gems = True
-        runner = self.bot.get_cog('Tasks')
         if runner:
-            await runner.delay_task()
+            runner.delay_task()
         await GLOBAL.g_channel.send('winv')
         await asyncio.sleep(5)
         async for msg in GLOBAL.g_channel.history(limit=5):
@@ -77,6 +77,8 @@ class Gems(commands.Cog):
                 break
         if inv == []:
             self.checking_gems = False
+            if runner:
+                runner.start_task()
             return
         
         if not GLOBAL.is_captcha and ('050') in inv:
@@ -112,12 +114,17 @@ class Gems(commands.Cog):
         for level in target:
             if types[level]:
                 use.append(str(min(types[level])))
+        
         if not GLOBAL.is_captcha and use:
+            async for msg in GLOBAL.g_channel.history(limit=5):
+                if 'you activated' in msg.content.lower()  and 'gem' in msg.content.lower() and not 'you already have an active' in msg.content and self.bot.user.display_name in msg.content:
+                    return
             await GLOBAL.g_channel.send(f'wuse {" ".join(use)}')
             await asyncio.sleep(5)
             self.checking_gems = False
+        if runner:
+            runner.start_task()
             return
-    
     
 async def setup(bot):
     await bot.add_cog(Gems(bot))

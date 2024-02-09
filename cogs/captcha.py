@@ -44,7 +44,7 @@ class Captcha(commands.Cog):
         return False
     
     async def get_captcha(self, message: selfcord.Message):
-        await asyncio.sleep(5)
+        await asyncio.sleep(10)
         async for msg in message.channel.history(limit=10):
             if 'link' in msg.content:
                 return await LOG.captcha(msg, 'link')
@@ -95,6 +95,7 @@ class Captcha(commands.Cog):
                 runner = self.bot.get_cog('Tasks')
                 if runner:
                     runner.start_task()
+                return 
             elif 'Wrong' in msg.content:
                 await LOG.captcha(message, 'not solved')
                 await LOG.captcha_failed(msg.content)
@@ -110,8 +111,9 @@ class Captcha(commands.Cog):
                 ban_time = int(ban.group(1))
                 ban_time = datetime.now() + timedelta(hours=ban_time)
                 ban_time = ban_time.strftime("%d %B %Y %H:%M")
-                await LOG.captcha_failed(f'You have been banned until **{ban_time}**')
                 GLOBAL.is_captcha = True
+                return await LOG.captcha_failed(f'You have been banned until **{ban_time}**')
+            return await LOG.info(f'OwO didn\'t response')
 
     async def solver(self, image, length):
         loop = asyncio.get_running_loop()
@@ -202,7 +204,8 @@ class Captcha(commands.Cog):
                 await asyncio.sleep(10)
                 runner = self.bot.get_cog('Tasks')
                 if runner:
-                    return runner.start_task()
+                    runner.start_task()
+                return 
             elif 'wrong' in msg.content.lower():
                 await LOG.captcha(captcha_msg, 'not solved')
                 await LOG.captcha_failed(msg.content)
@@ -213,8 +216,9 @@ class Captcha(commands.Cog):
                 ban_time = int(ban.group(1))
                 ban_time = datetime.now() + timedelta(hours=ban_time)
                 ban_time = ban_time.strftime("%d %B %Y %H:%M")
-                await LOG.captcha_failed(f'You have been banned until {ban_time}')
                 GLOBAL.is_captcha = True
+                return await LOG.captcha_failed(f'You have been banned until {ban_time}')
+            return await LOG.info(f'OwO didn\'t response')
     @commands.command()
     async def captcha_count(self, ctx: commands.Context, amount: int, limit: int):
         await self._delete_msg(ctx)
