@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import re
 from time import time
 
+import concurrent.futures
 import selfcord
 from selfcord.ext import commands
 from twocaptcha import TwoCaptcha
@@ -113,6 +114,27 @@ class Captcha(commands.Cog):
                 GLOBAL.is_captcha = True
 
     async def solver(self, image, length):
+        loop = asyncio.get_running_loop()
+        with concurrent.futures.ThreadPoolExecutor() as pool:
+            try:
+                result = await loop.run_in_executor(
+                    pool, lambda: TwoCaptcha(Auth.APIKEY).normal(
+                        image,
+                        numeric=2,
+                        minLen=length,
+                        maxLen=length,
+                        phrase=0,
+                        caseSensitive=0,
+                        calc=0,
+                        lang='en',
+                        hintText=f'Please answer with only the following {length} letter word, NO NUMBER,',
+                        )
+                    )
+                return result
+            except Exception as e:
+                await LOG.info(e)
+                return None
+    async def solver2(self, image, length):
         try:
             captcha = TwoCaptcha(self.apikey, defaultTimeout=180)
             response = captcha.normal(
@@ -131,15 +153,19 @@ class Captcha(commands.Cog):
             await LOG.info(e)
             return None
     async def report(self, ID, result: bool = True):
+        loop = asyncio.get_running_loop()
         try:
-            captcha = TwoCaptcha(self.apikey)
-            return captcha.report(ID, result)
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                captcha = await loop.run_in_executor(pool, lambda: TwoCaptcha(Auth.APIKEY))
+                return captcha.report(ID, result)
         except Exception as e:
             return await LOG.info(e)
     async def balance(self):
+        loop = asyncio.get_running_loop()
         try:
-            captcha = TwoCaptcha(self.apikey)
-            return round(captcha.balance(), 1)
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                captcha = await loop.run_in_executor(pool, lambda: TwoCaptcha(Auth.APIKEY))
+                return round(captcha.balance(), 1)
         except Exception as e:
             return await LOG.info(e)
     

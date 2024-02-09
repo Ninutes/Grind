@@ -91,7 +91,8 @@ class Tasks(commands.Cog):
     
     @commands.command(aliases=['start', 'resume'])
     async def start_grind(self, ctx: commands.Context, count: Optional[int] = None):
-        
+        if self.runner.is_running():
+            return
         self._counter = 0
         self.run_time = datetime.now()
         await self._delete_msg(ctx)
