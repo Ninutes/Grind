@@ -33,6 +33,7 @@ class Tasks(commands.Cog):
         self._counter = 0
         self.random_cmd_time = 0
         self.on_delay = False
+        self.cmd_count = 0
     
     def cog_check(self, ctx: commands.Context):
         return ctx.author.id in GLOBAL.get_value('allowedID') or ctx.author.id == ctx.me.id
@@ -134,6 +135,7 @@ class Tasks(commands.Cog):
         ):
             await GLOBAL.g_channel.typing()
             await GLOBAL.g_channel.send('owo')
+            self.cmd_count += 1
             
             await asyncio.sleep(self.delay)
             
@@ -145,12 +147,13 @@ class Tasks(commands.Cog):
             if not GLOBAL.is_captcha:
                 await GLOBAL.g_channel.typing()
                 await GLOBAL.g_channel.send(f'{prefix}{cmd}')
-                
+                self.cmd_count += 1
             await asyncio.sleep(self.delay)
             
             if not GLOBAL.is_captcha:
                 await GLOBAL.g_channel.typing()
                 await GLOBAL.g_channel.send(f'{prefix}{cmd2}')
+                self.cmd_count += 1
             self.ohb_time = time()
     
     async def pray(self) -> None:
@@ -166,6 +169,7 @@ class Tasks(commands.Cog):
             await GLOBAL.g_channel.typing()
             await asyncio.sleep(self.delay)
             await GLOBAL.g_channel.send(f"{prefix}{prayON['mode']} {prayID}")
+            self.cmd_count += 1
         self.pray_time = time()
 
     async def random_exp(self):
@@ -200,6 +204,7 @@ class Tasks(commands.Cog):
         and not GLOBAL.is_captcha):
             await GLOBAL.g_channel.typing()
             await GLOBAL.g_channel.send(f'{prefix}{random.choice(random_cmd)}')
+            self.cmd_count += 1
             self.random_cmd_time = time()
     
     async def custom_say(self):
@@ -215,6 +220,7 @@ class Tasks(commands.Cog):
             await GLOBAL.g_channel.typing()
             await asyncio.sleep(self.delay)
             await GLOBAL.g_channel.send(f"{prefix}{data['text']}")
+            self.cmd_count += 1
             self.custom_time = time()
     async def runner_sleep(self):
         data = GLOBAL.get_value('sleep')
@@ -241,7 +247,7 @@ class Tasks(commands.Cog):
             await self.random_cmd()
             if stop:
                 self.runner.cancel()
-                
+                LOG.info(f'getting captcha after sending **{self.cmd_count}** commands')
             if self.custom_run != 0 and self._counter == self.custom_run:
                 self.runner.cancel()
                 
