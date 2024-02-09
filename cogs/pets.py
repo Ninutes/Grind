@@ -50,8 +50,12 @@ class Pets(commands.Cog):
         if not ctx.me.display_name in message.content and '**🌱' in message.content:
             return
         if 'empowered' in message.content:
+            for key in ['OwO.daily.hunt', 'OwO.weekly.hunt', 'OwO.monthly.hunt', 'OwO.total.hunt']:
+                GLOBAL.set_owostats(key)
             pets = re.search(self.regex_found, message.content)
         elif 'caught' in message.content:
+            for key in ['OwO.daily.hunt', 'OwO.weekly.hunt', 'OwO.monthly.hunt', 'OwO.total.hunt']:
+                GLOBAL.set_owostats(key)
             pets = re.search(self.regex_caught, message.content)
         if pets:
             pets = pets.groups(1)
@@ -63,8 +67,6 @@ class Pets(commands.Cog):
                 return await LOG.pets(message)
     @commands.Cog.listener()
     async def on_message(self, message: selfcord.Message):
-        if not message.channel.id == GLOBAL.get_value('channelID'):
-            return
         if not message.author.id == GLOBAL.owoID:
             return
         await self.detect_pets(message)
@@ -75,6 +77,8 @@ class Pets(commands.Cog):
             footer = msg.footer.text if msg.footer.text else None
             if author and footer:
                 if ctx.me.display_name in author:
+                    for key in ['OwO.daily.battle', 'OwO.weekly.battle', 'OwO.monthly.battle', 'OwO.total.battle']:
+                        GLOBAL.set_owostats(key)
                     match_win = re.search(self.regex_win, footer)
                     match_lost = re.search(self.regex_lost, footer)
                     if match_win:

@@ -6,14 +6,6 @@ from datetime import datetime, time
 from config import GLOBAL
 from modules.logger import LOG
 
-commands_mapping = {
-    'owo': ['OwO.daily.owo', 'OwO.weekly.owo', 'OwO.monthly.owo', 'OwO.total.owo'],
-    'wh': ['OwO.daily.hunt', 'OwO.weekly.hunt', 'OwO.monthly.hunt', 'OwO.total.hunt'],
-    'owoh': ['OwO.daily.hunt', 'OwO.weekly.hunt', 'OwO.monthly.hunt', 'OwO.total.hunt'],
-    'wb': ['OwO.daily.battle', 'OwO.weekly.battle', 'OwO.monthly.battle', 'OwO.total.battle'],
-    'owob': ['OwO.daily.battle', 'OwO.weekly.battle', 'OwO.monthly.battle', 'OwO.total.battle']
-}
-
 class Stats(commands.Cog):
     """The description for Stats goes here."""
 
@@ -23,9 +15,14 @@ class Stats(commands.Cog):
 
     def cog_check(self, ctx: commands.Context):
         return ctx.author.id in GLOBAL.get_value('allowedID') or ctx.author.id == ctx.me.id
-
+    async def _delete_msg(self, ctx: commands.Context):
+        try:
+            await ctx.message.delete()
+        except Exception:
+            return  
     @commands.command(aliases=['owostats'])
     async def stats(self, ctx: commands.Context, *args):
+        await self._delete_msg(ctx)
         flag = None
         if args:
             flag = args[0].lower()
@@ -46,9 +43,8 @@ class Stats(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message : selfcord.Message):
         if message.author.id == GLOBAL.get_value('user.ID'):
-            command = message.content.lower()
-            if command in commands_mapping:
-                for key in commands_mapping[command]:
+            if message.content.lower() == 'owo':
+                for key in ['OwO.daily.owo', 'OwO.weekly.owo', 'OwO.monthly.owo', 'OwO.total.owo']:
                     GLOBAL.set_owostats(key)
         
     @tasks.loop(time=time(hour=7))

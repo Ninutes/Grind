@@ -20,9 +20,8 @@ class Tasks(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.next_daily = 0
-        self.hunt_time = 0
+        self.ohb_time = 0
         self.pray_time = 0
-        self.sayowo_time = 0
         self.exp_time = 0
         self.delay = random.randint(1,3)
         self.run_time = 0
@@ -128,34 +127,31 @@ class Tasks(commands.Cog):
         running = '`🟢`' if self.runner.is_running() else '`⛔`'
         await ctx.send(f'> {running} here {channel.jump_url}', delete_after=10)
     
-    async def say_owo(self):
+    async def random_hunt_battle(self) -> None:
         if (
-            time() - self.sayowo_time >= randrange(14, 17)
-            and GLOBAL.g_channel is not None
+            time() - self.ohb_time >= randrange(15, 18)
             and not GLOBAL.is_captcha
         ):
             await GLOBAL.g_channel.typing()
             await GLOBAL.g_channel.send('owo')
+            
             await asyncio.sleep(self.delay)
-            self.sayowo_time = time()
-
-    async def random_hunt_battle(self) -> None:
-        if (
-            time() - self.hunt_time >= randrange(15, 18)
-            and not GLOBAL.is_captcha
-        ):
+            
             cmd = random.choice(["h", "b"])
             cmd2 = 'h' if cmd == 'b' else 'b'
             prefix = GLOBAL.get_value('owoprefix')
             self._counter += 1
             
-            await GLOBAL.g_channel.typing()
-            await GLOBAL.g_channel.send(f'{prefix}{cmd}')
+            if not GLOBAL.is_captcha:
+                await GLOBAL.g_channel.typing()
+                await GLOBAL.g_channel.send(f'{prefix}{cmd}')
+                
             await asyncio.sleep(self.delay)
+            
             if not GLOBAL.is_captcha:
                 await GLOBAL.g_channel.typing()
                 await GLOBAL.g_channel.send(f'{prefix}{cmd2}')
-            self.hunt_time = time()
+            self.ohb_time = time()
     
     async def pray(self) -> None:
         prefix = GLOBAL.get_value('owoprefix')
@@ -237,7 +233,6 @@ class Tasks(commands.Cog):
     async def runner(self):
         try:
             stop = GLOBAL.is_captcha
-            await self.say_owo()
             await self.random_hunt_battle()
             await self.pray()
             await self.random_exp()

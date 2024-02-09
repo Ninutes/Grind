@@ -68,6 +68,7 @@ class Grind(commands.Bot):
         )
         embed.add_field(name='Guilds', value=f'connected to **{servers} guilds**', inline=False)
         embed.add_field(name='Loaded Cogs', value=cogs)
+        embed.set_footer(text=f"my prefix : {GLOBAL.get_value('prefix')}")
         await _webhook(
             embed=embed,  
         )
