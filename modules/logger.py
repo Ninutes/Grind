@@ -69,6 +69,15 @@ class Log:
             type='captcha'
         )
 
+    async def captcha_failed(self, reason: str):
+        embed = Embed(
+            description=reason,
+            color=selfcord.Color.red()
+        )
+        await _webhook(
+            embed=embed,
+            type='captcha'
+        )
     
     async def battle(self, message : selfcord.Message, key:str, value: int):
         b_embed = message.embeds[0]

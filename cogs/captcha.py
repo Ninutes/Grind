@@ -62,17 +62,17 @@ class Captcha(commands.Cog):
             result = await self.solver(image, length)
             if result:
                 if isinstance(result['code'], int):
-                    await LOG.info(f"{result['code']} has integer")
+                    await LOG.captcha_failed(f"{result['code']} has integer")
                     await self.report(result['captchaId'], False)
                     await asyncio.sleep(5)
                 elif len(result['code']) != int(length):
-                    await LOG.info(f"{result['code']} has different length")
+                    await LOG.captcha_failed(f"{result['code']} has different length")
                     await self.report(result['captchaId'], False)
                     await asyncio.sleep(5)
                 else:
                     return await self.send_result(message, result)
             if time() - solve_time > 180:
-                await LOG.failure(f'180\'s have been left, probably captcha unsolvable')
+                await LOG.captcha_failed(f'180\'s have been left, probably captcha unsolvable')
                 await LOG.captcha(message, 'not solved')
                 break
             
@@ -96,20 +96,20 @@ class Captcha(commands.Cog):
                     runner.start_task()
             elif 'Wrong' in msg.content:
                 await LOG.captcha(message, 'not solved')
-                await LOG.failure(msg.content)
+                await LOG.captcha_failed(msg.content)
                 await self.report(result['captchaId'], False)
                 GLOBAL.is_captcha = True
                 if not '2/3' in msg.content:
                     await asyncio.sleep(10)
                     return await self.get_result(message, self.captcha_image, self.captcha_length)
                 elif '2/3' in msg.content:
-                    return await LOG.failure(f'Auto solve failed, after 2 attempts.')
+                    return await LOG.captcha_failed(f'Auto solve failed, after 2 attempts.')
             elif 'banned' in msg.content:
                 ban = re.search(self.regex_ban, msg.content)
                 ban_time = int(ban.group(1))
                 ban_time = datetime.now() + timedelta(hours=ban_time)
                 ban_time = ban_time.strftime("%d %B %Y %H:%M")
-                await LOG.failure(f'You have been banned until {ban_time}')
+                await LOG.captcha_failed(f'You have been banned until **{ban_time}**')
                 GLOBAL.is_captcha = True
 
     async def solver(self, image, length):
@@ -179,7 +179,7 @@ class Captcha(commands.Cog):
                     return runner.start_task()
             elif 'wrong' in msg.content.lower():
                 await LOG.captcha(captcha_msg, 'not solved')
-                await LOG.failure(msg.content)
+                await LOG.captcha_failed(msg.content)
                 GLOBAL.is_captcha = True
                 return
             elif 'banned' in msg.content:
@@ -187,7 +187,7 @@ class Captcha(commands.Cog):
                 ban_time = int(ban.group(1))
                 ban_time = datetime.now() + timedelta(hours=ban_time)
                 ban_time = ban_time.strftime("%d %B %Y %H:%M")
-                await LOG.failure(f'You have been banned until {ban_time}')
+                await LOG.captcha_failed(f'You have been banned until {ban_time}')
                 GLOBAL.is_captcha = True
     @commands.command()
     async def captcha_count(self, ctx: commands.Context, amount: int, limit: int):
@@ -210,7 +210,7 @@ class Captcha(commands.Cog):
                 ban_time = int(ban.group(1))
                 ban_time = message.created_at + timedelta(hours=ban_time)
                 ban_time = ban_time.strftime("%d %B %Y %H:%M")
-                return await LOG.failure(f'You have been banned until {ban_time}')
+                return await LOG.captcha_failed(f'You have been banned until {ban_time}')
     @commands.Cog.listener()
     async def on_message(self, message : selfcord.Message):
         if not message.channel.id == GLOBAL.get_value('channelID'):return
