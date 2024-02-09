@@ -61,8 +61,8 @@ class Captcha(commands.Cog):
         while True:
             result = await self.solver(image, length)
             if result:
-                if isinstance(result['code'], int):
-                    await LOG.captcha_failed(f"{result['code']} has integer")
+                if not result['code'].isalpha():
+                    await LOG.captcha_failed(f"{result['code']} has an integer")
                     await self.report(result['captchaId'], False)
                     await asyncio.sleep(5)
                 elif len(result['code']) != int(length):
