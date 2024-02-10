@@ -49,16 +49,15 @@ class Stats(commands.Cog):
         
     @tasks.loop(time=time(hour=7))
     async def reset_owostats(self):
-
-        await LOG.info(f"**Your Daily OwO**\n```{GLOBAL.get_value('OwO.daily')}```")
+        await LOG.info(f"**Your Daily OwO**\n```py\nOwO : {GLOBAL.get_value('OwO.daily.owo')}, Hunt : {GLOBAL.get_value('OwO.daily.hunt')}, Battle : {GLOBAL.get_value('OwO.daily.battle')}```")
         await asyncio.sleep(1)
         GLOBAL.reset_owostats('daily')
         if datetime.now().weekday() == 0:
-            await LOG.info(f"**Your Weekly OwO**\n```{GLOBAL.get_value('OwO.weekly')}```")
+            await LOG.info(f"**Your Weekly OwO**\n```py\nOwO : {GLOBAL.get_value('OwO.weekly.owo')}, Hunt : {GLOBAL.get_value('OwO.weekly.hunt')}, Battle : {GLOBAL.get_value('OwO.weekly.battle')}```")
             await asyncio.sleep(1)
             GLOBAL.reset_owostats('weekly')
         if datetime.day == 1:
-            await LOG.info(f"**Your Monthly OwO**\n```{GLOBAL.get_value('OwO.monthly')}```")
+            await LOG.info(f"**Your Monthly OwO**\n```py\nOwO : {GLOBAL.get_value('OwO.monthly.owo')}, Hunt : {GLOBAL.get_value('OwO.monthly.hunt')}, Battle : {GLOBAL.get_value('OwO.monthly.battle')}```")
             await asyncio.sleep(1)
             GLOBAL.reset_owostats('monthly')
     @reset_owostats.before_loop
