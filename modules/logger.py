@@ -49,7 +49,7 @@ class Log:
         flag = '✅' if key == 'solved' else '❌' if key == 'not solved' else '⚠️'
         color = selfcord.Color.green() if key == 'solved' else selfcord.Color.red()
         embed = Embed(
-            description=f'`{flag}` Captcha **{key}** in {message.jump_url}',
+            description=f'`{flag}` Captcha **{key.upper()}** in {message.jump_url}',
             timestamp=datetime.datetime.now(),
             color=color
         )
