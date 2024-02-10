@@ -246,8 +246,8 @@ class Tasks(commands.Cog):
             await self.runner_sleep()
             await self.random_cmd()
             if stop:
-                self.runner.cancel()
                 LOG.info(f'getting captcha after sending **{self.cmd_count}** commands')
+                self.runner.cancel()
             if self.custom_run != 0 and self._counter == self.custom_run:
                 self.runner.cancel()
                 
