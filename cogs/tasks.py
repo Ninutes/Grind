@@ -97,6 +97,7 @@ class Tasks(commands.Cog):
         if self.runner.is_running():
             return
         self._counter = 0
+        self.custom_run = 0
         self.run_time = datetime.now()
         await self._delete_msg(ctx)
         GLOBAL.set_channel(ctx.channel)
