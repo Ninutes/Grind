@@ -1,4 +1,5 @@
-2captcha-python==1.2.1
+2captcha-python
 pycolorise
-requests
-selfcord.py @ git+https://github.com/dolfies/discord.py-self@97b34d2dec3638a6950e7ecb66bb8623677b7570
+PyNaCl
+python-dotenv
+selfcord.py @ git+https://github.com/dolfies/discord.py-self@renamed#egg=selfcord.py[voice]
