@@ -34,8 +34,12 @@ class Events(commands.Cog):
                     return await LOG.huntbot(message)
         if message.author.bot:return
         if message.mention_everyone:return
-        if self.bot.user.mentioned_in(message) or str(self.bot.user.id) in message.content or self.bot.user.display_name in message.content:
-            user = message.author
-            await LOG.info(f'{user.mention} have mentioned you in {message.jump_url}\n```{message.content}```')
+        member_cek = self.bot.get_user(757962089229844560)
+        if (self.bot.user.mentioned_in(message) 
+            or any(name in message.content.lower() for name in [self.bot.user.display_name, str(self.bot.user.id)])
+            or member_cek.mentioned_in(message)
+            or any(name in message.content.lower() for name in [member_cek.name, str(member_cek.id), member_cek.display_name])
+            ):
+            await LOG.info(f'I\'ve found something in {message.jump_url}\n```{message.content}```')
 async def setup(bot):
     await bot.add_cog(Events(bot))

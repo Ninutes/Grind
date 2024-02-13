@@ -38,8 +38,8 @@ class Stats(commands.Cog):
         else:
             stats = GLOBAL.get_value('OwO')
             for i, v in stats.items():
-                msg += f"**{i.upper()}**\n```py\nOwO : {v['owo']}, Hunt : {v['hunt']}, Battle: {v['battle']}```"
-        await LOG.info(f"**{flag.upper() if flag is not None else 'OWO'} STATS**\n\n{msg}")
+                msg += f"**{i.upper()}**```py\nOwO : {v['owo']}, Hunt : {v['hunt']}, Battle: {v['battle']}```"
+        await LOG.info(f"**{flag.upper() if flag is not None else 'OWO'} STATS**\n{msg}")
     @commands.Cog.listener()
     async def on_message(self, message : selfcord.Message):
         if message.author.id == GLOBAL.get_value('user.ID'):

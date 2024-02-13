@@ -219,16 +219,23 @@ class Captcha(commands.Cog):
                 GLOBAL.is_captcha = True
                 return await LOG.captcha_failed(f'You have been banned until {ban_time}')
             return await LOG.info(f'OwO didn\'t response')
-    @commands.command()
+    @commands.command(aliases=['ccount'])
     async def captcha_count(self, ctx: commands.Context, amount: int, limit: int):
         await self._delete_msg(ctx)
         self.owoDM = self.bot.get_user(GLOBAL.owoID).dm_channel
         total = 0
-        async for message in self.owoDM.history(limit=limit):
-            if message.content.count('cross_box') == amount and 'captcha' in message.content:
-                total += 1
-            if message.content.count('cross_box') != amount and 'captcha' in message.content:
-                break
+        if amount >= 1:
+            async for message in self.owoDM.history(limit=limit):
+                if message.content.count('cross_box') == amount and 'captcha' in message.content:
+                    total += 1
+                if message.content.count('cross_box') != amount and 'captcha' in message.content:
+                    break
+        else:
+            async for message in self.owoDM.history(limit=limit):
+                if message.content.count('blank_box') == 3 and 'captcha' in message.content:
+                    total += 1
+                if message.content.count('blank_box') != 3 and 'captcha' in message.content:
+                    break
         await LOG.info(f'total {amount} cross_box :{total}')
     @commands.command()
     async def cek_ban(self, ctx: commands.Context):

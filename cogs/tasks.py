@@ -114,7 +114,9 @@ class Tasks(commands.Cog):
     @commands.command(aliases=['stop', 'pause'])
     async def stop_grinding(self, ctx: commands.Context):
         await self._delete_msg(ctx)
-        self.runner.cancel()
+        if self.runner.is_running():
+            return self.runner.cancel()
+        return await LOG.info('Self-bot is not running yet.')
     
     @commands.command(aliases=['ch'])
     async def change_channel(self, ctx: commands.Context):
@@ -247,7 +249,7 @@ class Tasks(commands.Cog):
             await self.runner_sleep()
             await self.random_cmd()
             if stop:
-                await LOG.info(f'getting captcha after sending **{self.cmd_count}** commands')
+                await LOG.captcha_info(f'getting captcha after sending **{self.cmd_count}** commands')
                 self.cmd_count = 0
                 self.runner.cancel()
             if self.custom_run != 0 and self._counter == self.custom_run:
