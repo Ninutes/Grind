@@ -71,12 +71,11 @@ class Pets(commands.Cog):
             return
         await self.detect_pets(message)
         if message.embeds:
-            ctx = await self.bot.get_context(message)
             msg = message.embeds[0]
             author = msg.author.name if msg.author.name is not None else None
             footer = msg.footer.text if msg.footer.text else None
             if author and footer:
-                if ctx.me.display_name in author:
+                if self.bot.user.display_name in author:
                     for key in ['OwO.daily.battle', 'OwO.weekly.battle', 'OwO.monthly.battle', 'OwO.total.battle']:
                         GLOBAL.set_owostats(key)
                     match_win = re.search(self.regex_win, footer)
