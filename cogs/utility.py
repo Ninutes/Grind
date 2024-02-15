@@ -1,7 +1,6 @@
 import asyncio
-from typing import Optional
+import psutil
 from selfcord.ext import commands
-import selfcord
 
 from config import GLOBAL
 from modules.logger import LOG, send_tele
@@ -23,8 +22,9 @@ class Utility(commands.Cog):
     @commands.command(aliases=['pong'])
     async def ping(self, ctx: commands.Context):
         await self._delete_msg(ctx)
-        await ctx.send(f'🏓... pong `{round(self.bot.latency * 1000)}`ms', delete_after=10)
-
+        memory = psutil.virtual_memory()
+        cpu = psutil.cpu_percent(interval=1)
+        await ctx.send(f'```py\n🏓... pong, latency: {round(self.bot.latency * 1000)} ms, memory : {memory.percent}%, cpu : {cpu}%```', delete_after=10)
     @commands.command(aliases=['restart'])
     async def die(self, ctx: commands.Context):
         await self._delete_msg(ctx)
