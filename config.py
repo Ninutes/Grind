@@ -89,7 +89,7 @@ class Config:
         # Save the updated configuration
         self.save_config()
     def reset_owostats(self, key : str):
-        self.set_value(f'OwO.{key}', {})
+        self.set_value(f'OwO.{key}', {'owo':0, 'hunt':0, 'battle':0})
 
 GLOBAL = Config()
 
