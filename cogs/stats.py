@@ -32,14 +32,17 @@ class Stats(commands.Cog):
             flag = None
         owo_stats = GLOBAL.get_value('OwO')
         msg = ''
-        if flag is not None and owo_stats:
-            stats = owo_stats.get(flag)
-            msg = f"```py\nOwO : {stats['owo']}, Hunt : {stats['hunt']}, Battle : {stats['battle']}```"
-        else:
-            stats = GLOBAL.get_value('OwO')
-            for i, v in stats.items():
-                msg += f"**{i.upper()}**```py\nOwO : {v['owo']}, Hunt : {v['hunt']}, Battle: {v['battle']}```"
-        await LOG.info(f"**{flag.upper() if flag is not None else 'OWO'} STATS**\n{msg}")
+        try:
+            if flag is not None and owo_stats:
+                stats = owo_stats.get(flag)
+                msg = f"```py\nOwO : {stats['owo']}, Hunt : {stats['hunt']}, Battle : {stats['battle']}```"
+            else:
+                stats = GLOBAL.get_value('OwO')
+                for i, v in stats.items():
+                    msg += f"**{i.upper()}**```py\nOwO : {v['owo']}, Hunt : {v['hunt']}, Battle: {v['battle']}```"
+            await LOG.info(f"**{flag.upper() if flag is not None else 'OWO'} STATS**\n{msg}")
+        except Exception as e:
+            await LOG.error(f'```py\n{e}```')
     @commands.Cog.listener()
     async def on_message(self, message : selfcord.Message):
         if message.author.id == GLOBAL.get_value('user.ID'):

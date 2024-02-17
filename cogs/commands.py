@@ -46,8 +46,12 @@ class CMD(commands.Cog):
         if value is not None:
             value = True if value.lower() == 'on' else False if value.lower() == 'off' else value
         await self._delete_msg(ctx)
-        GLOBAL.set_value(key, value)
-        return await LOG.success(f'Successfully set **{key}** to `{value}`')
+        cek = GLOBAL.get_value(key, None)
+        if cek is not None:
+            GLOBAL.set_value(key, value)
+            return await LOG.success(f'Successfully set **{key}** to `{value}`')
+        else:
+            return await LOG.failure(f'Invalid {key}, or {key} does not exist')
     @commands.command()
     async def tes_embed(self, ctx: commands.Context, msgID: int):
         await self._delete_msg(ctx)

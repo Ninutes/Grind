@@ -173,7 +173,7 @@ class Tasks(commands.Cog):
             await asyncio.sleep(self.delay)
             await GLOBAL.g_channel.send(f"{prefix}{prayON['mode']} {prayID}")
             self.cmd_count += 1
-        self.pray_time = time()
+            self.pray_time = time()
 
     async def random_exp(self):
         exp_mode = GLOBAL.get_value('exp')
