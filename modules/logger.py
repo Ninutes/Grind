@@ -148,7 +148,7 @@ class Log:
             embed=embed,  
         )
     async def info(self, reason : str):
-        color = selfcord.Color.green()
+        color = selfcord.Color.blue()
         embed = Embed(
             description=reason,
             timestamp=datetime.datetime.now(),
