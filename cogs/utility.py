@@ -74,8 +74,8 @@ class Utility(commands.Cog):
         await self._delete_msg(ctx)
         guild = self.bot.get_guild(guildID)
         if guild is None:
-            await ctx.send(f'```py\n{guildID} not found```')
+            await LOG.failure(f'```py\n{guildID} not found```')
         else:
-            await ctx.send(f'```py\nGuild Information\nID : {guildID}\nName : {guild.name}\nMembers : {guild.member_count}\nOwner : {guild.owner_id}```')
+            await LOG.info(f'```py\nGuild Information\nID : {guildID}\nName : {guild.name}\nMembers : {guild.member_count}\nOwner : {guild.owner_id}```')
 async def setup(bot):
     await bot.add_cog(Utility(bot))
