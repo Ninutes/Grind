@@ -68,5 +68,14 @@ class Utility(commands.Cog):
             await LOG.info(f"`✅` **{cog.upper()}** cog unloaded")
         except Exception as e:
             await LOG.info(f"`❌` Failed to unload **{cog.upper()}** cog\n{e}")
+    
+    @commands.command(aliases=['guild'])
+    async def check_guild(self, ctx  : commands.Context, guildID : int):
+        await self._delete_msg(ctx)
+        guild = self.bot.get_guild(guildID)
+        if guild is None:
+            await ctx.send(f'```py\n{guildID} not found```')
+        else:
+            await ctx.send(f'```py\nGuild Information\nID : {guildID}\nName : {guild.name}\nMembers : {guild.member_count}\nOwner : {guild.owner_id}```')
 async def setup(bot):
     await bot.add_cog(Utility(bot))
