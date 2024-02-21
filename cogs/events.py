@@ -40,6 +40,6 @@ class Events(commands.Cog):
             or member_cek.mentioned_in(message)
             or any(name in message.content.lower() for name in [member_cek.name, str(member_cek.id), member_cek.display_name])
             ):
-            await LOG.info(f'I\'ve found something in {message.jump_url}\n```{message.content}```')
+            await LOG.info(f'I\'ve found something in {message.jump_url}\n{message.author.mention} :\n```{message.content}```')
 async def setup(bot):
     await bot.add_cog(Events(bot))
