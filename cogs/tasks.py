@@ -233,7 +233,7 @@ class Tasks(commands.Cog):
         if time() - self.sleep_time > sleep_time:
             self.sleep = True
             sleeping = random.randint(60, 120)
-            LOG.info(f'sleeping until `{sleeping}` seconds')
+            # await LOG.info(f'sleeping until `{sleeping}` seconds')
             await asyncio.sleep(sleeping)
             self.sleep = False
             self.sleep_time = time()
