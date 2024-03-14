@@ -133,7 +133,7 @@ class Tasks(commands.Cog):
     
     async def random_hunt_battle(self) -> None:
         if (
-            time() - self.ohb_time >= randrange(15, 18)
+            time() - self.ohb_time >= randrange(14, 17)
             and not GLOBAL.is_captcha
         ):
             await GLOBAL.g_channel.typing()
