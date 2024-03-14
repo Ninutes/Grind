@@ -251,6 +251,7 @@ class Captcha(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message : selfcord.Message):
         if not message.channel.id == GLOBAL.get_value('channelID'):return
+        if GLOBAL.is_captcha:return
         if message.author.id == GLOBAL.owoID and 'captcha' in message.content:
             self.owoDM = self.bot.get_user(GLOBAL.owoID).dm_channel
             detect = await self.detect_captcha(message, '⚠️')
