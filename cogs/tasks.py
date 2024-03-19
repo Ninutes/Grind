@@ -72,6 +72,7 @@ class Tasks(commands.Cog):
         if self.runner.is_running():
             self.on_delay = True
             self.runner.cancel()
+            self.on_delay = False
         return
     @commands.Cog.listener()
     async def on_message(self, message: selfcord.Message):

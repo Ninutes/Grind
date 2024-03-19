@@ -45,17 +45,19 @@ class Captcha(commands.Cog):
     
     async def get_captcha(self, message: selfcord.Message):
         await asyncio.sleep(10)
+        user = self.bot.get_user(GLOBAL.get_value('user.ID'))
         async for msg in message.channel.history(limit=10):
-            if 'link' in msg.content:
+            name = [user.name, user.display_name, user.mention, user.global_name, user.id]
+            if 'link' in msg.content and any(n in msg.content for n in name):
                 return await LOG.captcha(msg, 'link')
-            if msg.attachments and 'captcha' in msg.content:
+            if msg.attachments and 'captcha' in msg.content and any(n in msg.content for n in name):
                 self.captcha_image = b64encode(await msg.attachments[0].read()).decode("utf-8")
                 self.captcha_length = msg.content[msg.content.find("letter word") - 2]
                 if GLOBAL.get_value('autosolve'):
                     return await self.get_result(msg, self.captcha_image, self.captcha_length)
                 return await LOG.captcha(msg, 'detected')
-            if 'captcha' in msg.content and any(string in msg.content for string in ['1/5', '2/5', '3/5']):
-                return await LOG.captcha(msg, 'detected')
+            if 'captcha' in msg.content and any(string in msg.content for string in ['1/5', '2/5', '3/5']) and any(n in msg.content for n in name):
+                await LOG.captcha(msg, 'detected')
     
     async def get_result(self, message : selfcord.Message, image, length):
         solve_time = time()
