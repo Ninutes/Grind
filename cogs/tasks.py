@@ -26,7 +26,7 @@ class Tasks(commands.Cog):
         self.delay = random.randint(1,3)
         self.run_time = 0
         self.ch_change_time = time()
-        self.sleep_time = time()
+        self.next_sleep_time = 0
         self.custom_time = 0
         self.sleep = False
         self.custom_run = 0
@@ -228,13 +228,12 @@ class Tasks(commands.Cog):
             self.custom_time = time()
     async def runner_sleep(self):
         data = GLOBAL.get_value('sleep')
-        sleep_time = int(data['time'])
         if not data['enable']:
             return
-        if time() - self.sleep_time > sleep_time:
+        if self.next_sleep_time - random.randint(1,5) == self.cmd_count:
             self.sleep = True
             sleeping = random.randint(60, 120)
-            # await LOG.info(f'sleeping until `{sleeping}` seconds')
+            await LOG.info(f'sleeping for {sleeping} seconds')
             await asyncio.sleep(sleeping)
             self.sleep = False
             self.sleep_time = time()
@@ -251,6 +250,7 @@ class Tasks(commands.Cog):
             await self.random_cmd()
             if stop:
                 await LOG.captcha_info(f'getting captcha after sending **{self.cmd_count}** commands')
+                self.next_sleep_time = self.cmd_count
                 self.cmd_count = 0
                 self.runner.cancel()
             if self.custom_run != 0 and self._counter == self.custom_run:
