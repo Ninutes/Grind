@@ -60,7 +60,7 @@ class Log:
 
         if message.attachments:
             embed.set_image(url=message.attachments[0].url)
-        if key in ['not solved', 'detected']:
+        if key in ['not solved', 'detected', 'link']:
             await send_tele('⚠️ Captcha detected')
         
         await _webhook(
