@@ -89,7 +89,6 @@ class Captcha(commands.Cog):
                     async with session.post("https://owobot.com/api/captcha/verify", json={"token": result['code']}, headers={"Cookie": cookie}) as response:
                         if response.status == 200:
                             await LOG.info('Try solve captcha link...')
-                            response.wait_for_close()
                         else:
                             await LOG.captcha_failed(f'Error: {response.status}')
                             return LOG.captcha(message, 'detected')
