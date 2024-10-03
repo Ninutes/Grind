@@ -6,7 +6,6 @@ from time import time
 
 import concurrent.futures
 import aiohttp
-import aiohttp
 import selfcord
 from selfcord.ext import commands
 from twocaptcha import TwoCaptcha
