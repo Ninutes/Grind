@@ -5,6 +5,8 @@ import re
 from time import time
 
 import concurrent.futures
+import aiohttp
+import aiohttp
 import selfcord
 from selfcord.ext import commands
 from twocaptcha import TwoCaptcha
@@ -49,7 +51,7 @@ class Captcha(commands.Cog):
         async for msg in message.channel.history(limit=10):
             name = [user.name, user.display_name, user.mention, user.global_name, user.id]
             if 'link' in msg.content and any(n in msg.content for n in name):
-                return await LOG.captcha(msg, 'link')
+                return await self.solver_link(message)
             if msg.attachments and 'captcha' in msg.content and any(n in msg.content for n in name):
                 self.captcha_image = b64encode(await msg.attachments[0].read()).decode("utf-8")
                 self.captcha_length = msg.content[msg.content.find("letter word") - 2]
@@ -81,7 +83,23 @@ class Captcha(commands.Cog):
             
 
     async def send_result(self, message, result):
-        await self.owoDM.send(result['code'].lower())
+        if len(result['code']) > 8:
+            cookie = GLOBAL.get_value('cookies')
+            try:
+                async with aiohttp.ClientSession(headers={"Connection": "keep-alive"}) as session:
+                    async with session.post("https://owobot.com/api/captcha/verify", json={"token": result['code']}, headers={"Cookie": cookie}) as response:
+                        if response.status == 200:
+                            await LOG.info('Try solve captcha link...')
+                            response.wait_for_close()
+                        else:
+                            await LOG.captcha_failed(f'Error: {response.status}')
+                            return LOG.captcha(message, 'detected')
+            except Exception as e:
+                await LOG.failure(e)
+                return LOG.captcha(message, 'detected')
+                        
+        else:
+            await self.owoDM.send(result['code'].lower())
         await asyncio.sleep(5)
         async for msg in self.owoDM.history(limit=1):
             if 'verified' in msg.content:
@@ -111,7 +129,7 @@ class Captcha(commands.Cog):
             elif 'banned' in msg.content:
                 ban = re.search(self.regex_ban, msg.content)
                 ban_time = int(ban.group(1))
-                ban_time = datetime.now() + timedelta(hours=ban_time)
+                ban_time = datetime.now() + timedelta(hours=ban_time) + timedelta(hours=7)
                 ban_time = ban_time.strftime("%d %B %Y %H:%M")
                 GLOBAL.is_captcha = True
                 return await LOG.captcha_failed(f'You have been banned until **{ban_time}**')
@@ -138,24 +156,20 @@ class Captcha(commands.Cog):
             except Exception as e:
                 await LOG.info(e)
                 return None
-    async def solver2(self, image, length):
-        try:
-            captcha = TwoCaptcha(self.apikey, defaultTimeout=180)
-            response = captcha.normal(
-                image, 
-                numeric=2,
-                minLen=length,
-                maxLen=length,
-                phrase=0,
-                caseSensitive=0,
-                calc=0,
-                lang='en',
-                hintText=f'Please answer with only the following {length} letter word, NO NUMBER,',)
-            await asyncio.sleep(10)
-            return response
-        except Exception as e:
-            await LOG.info(e)
-            return None
+    async def solver_link(self, message: selfcord.Message):
+        loop = asyncio.get_running_loop()
+        with concurrent.futures.ThreadPoolExecutor() as pool:
+            try:
+                result = await loop.run_in_executor(
+                    pool, lambda: TwoCaptcha(Auth.APIKEY, defaultTimeout=300).hcaptcha(sitekey="a6a1d5ce-612d-472d-8e37-7601408fbc09", url="https://owobot.com/captcha")
+                )
+                if result:
+                    return await self.send_result(message, result)
+                else:
+                    return await LOG.captcha(message, 'detected')
+            except Exception as e:
+                await LOG.info(e)
+                return await LOG.captcha(message, 'detected')
     async def report(self, ID, result: bool = True):
         loop = asyncio.get_running_loop()
         try:
@@ -239,6 +253,22 @@ class Captcha(commands.Cog):
                 if message.content.count('blank_box') != 3 and 'captcha' in message.content:
                     break
         await LOG.info(f'total {amount} cross_box :{total}')
+    
+    @commands.command()
+    async def s_link(self, ctx: commands.Context):
+        await self._delete_msg(ctx)
+        self.owoDM = self.bot.get_user(GLOBAL.owoID).dm_channel
+        await self.solver_link(ctx.message)
+        # web = "https://owobot.com/captcha"
+        # solver = TwoCaptcha(apiKey=Auth.APIKEY)
+        # try:
+        #     hasil = solver.hcaptcha(sitekey="a6a1d5ce-612d-472d-8e37-7601408fbc09", url=web)
+        #     if hasil:
+        #         await LOG.info(f'```js\n{hasil}```')
+        # except Exception as e:
+        #     await LOG.info(e)
+            
+    
     @commands.command()
     async def cek_ban(self, ctx: commands.Context):
         await self._delete_msg(ctx)
