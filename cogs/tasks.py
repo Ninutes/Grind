@@ -81,7 +81,7 @@ class Tasks(commands.Cog):
         if not message.channel.id == GLOBAL.get_value('channelID'):
             return
         if self.sleep or GLOBAL.is_captcha:return
-        if message.author.id == GLOBAL.get_value('user.ID') and message.content.startswith(f'{GLOBAL.get_value('owoprefix')}h'):
+        if message.author.id == GLOBAL.get_value('user.ID') and message.content.startswith(f"{GLOBAL.get_value('owoprefix')}h"):
             try:
                 await self.bot.wait_for(
                     'message',
