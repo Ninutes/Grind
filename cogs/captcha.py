@@ -88,7 +88,7 @@ class Captcha(commands.Cog):
                 async with aiohttp.ClientSession(headers={"Connection": "keep-alive"}) as session:
                     async with session.post("https://owobot.com/api/captcha/verify", json={"token": result['code']}, headers={"Cookie": cookie}) as response:
                         if response.status == 200:
-                            await LOG.info('Try solve captcha link...')
+                            await LOG.captcha_info('Try solve captcha link...')
                         else:
                             await LOG.captcha_failed(f'Error: {response.status}')
                             return LOG.captcha(message, 'detected')
