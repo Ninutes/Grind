@@ -141,7 +141,7 @@ class Tasks(commands.Cog):
             await GLOBAL.g_channel.send('owo')
             self.cmd_count += 1
             
-            await asyncio.sleep(self.delay)
+            await asyncio.sleep(random.randint(1,3))
             
             cmd = random.choice(["h", "b"])
             cmd2 = 'h' if cmd == 'b' else 'b'
@@ -152,7 +152,7 @@ class Tasks(commands.Cog):
                 await GLOBAL.g_channel.typing()
                 await GLOBAL.g_channel.send(f'{prefix}{cmd}')
                 self.cmd_count += 1
-            await asyncio.sleep(self.delay)
+            await asyncio.sleep(random.randint(1,3))
             
             if not GLOBAL.is_captcha:
                 await GLOBAL.g_channel.typing()
@@ -171,7 +171,7 @@ class Tasks(commands.Cog):
             and not GLOBAL.is_captcha
         ):
             await GLOBAL.g_channel.typing()
-            await asyncio.sleep(self.delay)
+            await asyncio.sleep(random.randint(1,3))
             await GLOBAL.g_channel.send(f"{prefix}{prayON['mode']} {prayID}")
             self.cmd_count += 1
             self.pray_time = time()
