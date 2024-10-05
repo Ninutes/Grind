@@ -24,10 +24,10 @@ class MyHelp(commands.HelpCommand):
         embed = selfcord.Embed(
             color=selfcord.Color.blue()
             )
-        embed.set_author(name=f"List Available Commands", icon_url="https://cdn.discordapp.com/emojis/1166733557482397758.webp?size=96&quality=lossless")
+        embed.set_author(name=f"List Available Commands", icon_url="https://cdn.discordapp.com/avatars/408785106942164992/497f4ee8388722ccdb35493ca0b61ef7.png")
         embed.add_field(name="General", value="`help`, `ping`, `say`, `avatar` , `math`", inline=False)
         embed.add_field(name="Self-Bot", value="`start`, `stop`, `start_custom`, `stop_custom`", inline=False)
-        embed.add_field(name="Captcha", value="`dms`", inline=False)
+        embed.add_field(name="Captcha", value="`dms`, `s_link`, `cek_ban`, `captcha_count`", inline=False)
         embed.add_field(name="Settings", value="`config`, `set`, `die`, `load`, `unload`, `reload` ", inline=False)
         embed.set_footer(text=f"type {Auth.PREFIXES}help <command> for more info")
         await _webhook(

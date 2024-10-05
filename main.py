@@ -127,7 +127,8 @@ class Grind(commands.Bot):
             color=selfcord.Color.light_gray(),
             timestamp=datetime.now()
         )
-        embed.add_field(name='Guilds', value=f'connected to **{servers} guilds**', inline=False)
+        embed.set_thumbnail(url='https://cdn.discordapp.com/emojis/1230304058405814332.gif')
+        embed.add_field(name='Self-Bot', value=f'connected to **{servers} guilds**', inline=False)
         embed.add_field(name='Loaded Cogs', value=cogs)
         embed.set_footer(text=f"my prefix : {GLOBAL.get_value('prefix')}")
         await _webhook(

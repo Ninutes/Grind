@@ -7,7 +7,7 @@ import random
 import os
 from selfcord.ext import commands, tasks
 from time import time
-from random import choice, randrange
+from random import randrange
 
 from config import GLOBAL
 from modules.logger import LOG
@@ -23,7 +23,6 @@ class Tasks(commands.Cog):
         self.ohb_time = 0
         self.pray_time = 0
         self.exp_time = 0
-        self.delay = random.randint(1,3)
         self.run_time = 0
         self.ch_change_time = time()
         self.next_sleep_time = 0
@@ -158,6 +157,7 @@ class Tasks(commands.Cog):
                 await GLOBAL.g_channel.typing()
                 await GLOBAL.g_channel.send(f'{prefix}{cmd2}')
                 self.cmd_count += 1
+                await asyncio.sleep(1)
             self.ohb_time = time()
     
     async def pray(self) -> None:
@@ -192,7 +192,7 @@ class Tasks(commands.Cog):
             ):
                 random_quotes = random.choice(quotes)
                 await GLOBAL.g_channel.typing()
-                await asyncio.sleep(self.delay)
+                await asyncio.sleep(random.randint(1,3))
                 await GLOBAL.g_channel.send(random_quotes['quoteText'] + " - " + random_quotes['quoteAuthor'])
             self.exp_time = time()
     
@@ -222,7 +222,7 @@ class Tasks(commands.Cog):
             and not GLOBAL.is_captcha
         ):
             await GLOBAL.g_channel.typing()
-            await asyncio.sleep(self.delay)
+            await asyncio.sleep(random.randint(1,3))
             await GLOBAL.g_channel.send(f"{prefix}{data['text']}")
             self.cmd_count += 1
             self.custom_time = time()
