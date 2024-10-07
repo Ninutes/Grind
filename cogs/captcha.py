@@ -85,7 +85,7 @@ class Captcha(commands.Cog):
         if len(result['code']) > 8:
             cookie = GLOBAL.get_value('cookies')
             try:
-                async with aiohttp.ClientSession(headers={"Connection": "keep-alive"}) as session:
+                async with aiohttp.ClientSession() as session:
                     async with session.post("https://owobot.com/api/captcha/verify", json={"token": result['code']}, headers={"Cookie": cookie}) as response:
                         if response.status == 200:
                             await LOG.captcha_info('Try solve captcha link...')

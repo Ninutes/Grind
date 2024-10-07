@@ -44,7 +44,8 @@ class Events(commands.Cog):
         spy = GLOBAL.get_value('spy')
         if spy['enable']:
             spy_member = self.bot.get_user(int(spy['ID']))
-            if (spy_member.mentioned_in(message) 
+            if spy_member is None: return
+            if (spy_member.mentioned_in(message)
                 or any(name in message.content.lower() for name in [spy_member.name, str(spy_member.id), spy_member.display_name])
                 ) or message.author.id == spy_member.id:
                 await LOG.info(f'I\'ve got something in {message.jump_url}\n{message.author.mention} :\n```{message.content}```')
