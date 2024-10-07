@@ -91,10 +91,10 @@ class Captcha(commands.Cog):
                             await LOG.captcha_info('Try solve captcha link...')
                         else:
                             await LOG.captcha_failed(f'Error: {response.status}')
-                            return LOG.captcha(message, 'detected')
+                            return await LOG.captcha(message, 'detected')
             except Exception as e:
                 await LOG.failure(e)
-                return LOG.captcha(message, 'detected')
+                return await LOG.captcha(message, 'detected')
                         
         else:
             await self.owoDM.send(result['code'].lower())
