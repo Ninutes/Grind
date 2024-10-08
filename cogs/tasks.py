@@ -132,6 +132,7 @@ class Tasks(commands.Cog):
         await ctx.send(f'> {running} here {channel.jump_url}', delete_after=10)
     
     async def random_hunt_battle(self) -> None:
+        delay = int(GLOBAL.get_value('owodelay'))
         if (
             time() - self.ohb_time >= randrange(14, 17)
             and not GLOBAL.is_captcha
@@ -140,7 +141,7 @@ class Tasks(commands.Cog):
             await GLOBAL.g_channel.send('owo')
             self.cmd_count += 1
             
-            await asyncio.sleep(random.randint(1,int(GLOBAL.get_value('owodelay'))))
+            await asyncio.sleep(random.randint(1,delay))
             
             cmd = random.choice(["h", "b"])
             cmd2 = 'h' if cmd == 'b' else 'b'
@@ -151,7 +152,7 @@ class Tasks(commands.Cog):
                 await GLOBAL.g_channel.typing()
                 await GLOBAL.g_channel.send(f'{prefix}{cmd}')
                 self.cmd_count += 1
-            await asyncio.sleep(random.randint(1,int(GLOBAL.get_value('owodelay'))))
+            await asyncio.sleep(random.randint(1,delay))
             
             if not GLOBAL.is_captcha:
                 await GLOBAL.g_channel.typing()
@@ -162,6 +163,7 @@ class Tasks(commands.Cog):
     
     async def pray(self) -> None:
         prefix = GLOBAL.get_value('owoprefix')
+        delay = int(GLOBAL.get_value('owodelay'))
         prayON  =  GLOBAL.get_value('pray')
         prayID = '' if prayON['ID'] is None else prayON['ID']
         if not prayON['enable']:
@@ -171,7 +173,7 @@ class Tasks(commands.Cog):
             and not GLOBAL.is_captcha
         ):
             await GLOBAL.g_channel.typing()
-            await asyncio.sleep(random.randint(1,int(GLOBAL.get_value('owodelay'))))
+            await asyncio.sleep(random.randint(1,delay))
             await GLOBAL.g_channel.send(f"{prefix}{prayON['mode']} {prayID}")
             self.cmd_count += 1
             self.pray_time = time()
