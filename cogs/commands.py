@@ -115,11 +115,12 @@ class CMD(commands.Cog):
         if opt == 'clear':
             with open(LOG_FILE, 'w') as f:
                 f.write('')
-            return await LOG.success('Log cleared `✅`')
+            return await LOG.success('`✅` Log cleared')
         async with aiohttp.ClientSession() as session:
             webhook = Webhook.from_url(GLOBAL.get_value('webhook.URL'), session=session)
             embed = Embed(
-                color=selfcord.Color.blue()
+                color=selfcord.Color.blue(),
+                description=f'`🗒️` LOGS {ctx.message.created_at.now().strftime("%d/%m/%Y, %H:%M:%S")}'
             )
             await webhook.send(
                     file=selfcord.File(LOG_FILE, 'selfcord.log'), 

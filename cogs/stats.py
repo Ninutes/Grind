@@ -117,7 +117,7 @@ class Stats(commands.Cog):
         cook = self.auth(Auth.TOKEN)
         if cook is not None:
             GLOBAL.set_value('cookies', cook)
-            await LOG.info('cookies updated `✅`')
+            await LOG.info(' `✅` cookies updated')
         if datetime.now().weekday() == 0:
             await LOG.info(f"**Your Weekly OwO**\n```py\nOwO : {GLOBAL.get_value('OwO.weekly.owo')}, Hunt : {GLOBAL.get_value('OwO.weekly.hunt')}, Battle : {GLOBAL.get_value('OwO.weekly.battle')}```")
             await asyncio.sleep(1)
