@@ -1,6 +1,9 @@
+import os
 from typing import Optional
+import aiohttp
 from selfcord.ext import commands
-import selfcord
+from selfcord import Embed, Webhook
+import selfcord 
 
 from config import GLOBAL
 from modules.logger import LOG, _webhook
@@ -104,6 +107,29 @@ class CMD(commands.Cog):
                                 if comp.emoji.name == key:
                                     await comp.click()
                                     break
+    
+    @commands.command(aliases=['log', 'logs'])
+    async def send_logs(self, ctx: commands.Context, opt : str = None):
+        await self._delete_msg(ctx)
+        LOG_FILE = os.path.join('selfcord.log')
+        if opt == 'clear':
+            with open(LOG_FILE, 'w') as f:
+                f.write('')
+            return await LOG.success('Log cleared `✅`')
+        async with aiohttp.ClientSession() as session:
+            webhook = Webhook.from_url(GLOBAL.get_value('webhook.URL'), session=session)
+            embed = Embed(
+                color=selfcord.Color.blue()
+            )
+            await webhook.send(
+                    file=selfcord.File(LOG_FILE, 'selfcord.log'), 
+                    username=self.bot.user.display_name, 
+                    avatar_url=self.bot.user.avatar.url,
+                    embed=embed
+                    )
+                
+        # await LOG.info(f"Here are the last {rows} lines from the log:\n```{log_text}```")
+    
     
 async def setup(bot):
     await bot.add_cog(CMD(bot))
