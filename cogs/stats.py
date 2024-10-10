@@ -20,7 +20,7 @@ class Stats(commands.Cog):
     def cog_check(self, ctx: commands.Context):
         return ctx.author.id in GLOBAL.get_value('allowedID') or ctx.author.id == ctx.me.id
     
-    def auth(self, token):
+    async def auth(self, token):
         uri = "https://owobot.com/api/auth/discord"
         r = self.myclient.get(uri)
         oauth_reqstr = r.headers.get("location")
@@ -68,11 +68,11 @@ class Stats(commands.Cog):
                     ("retrieved cookie for solver")
                     return cookie
                 else:
-                    print(f"(-) Failed to add token to oauth | {res2.text}, {res2.status_code}")
+                    await LOG.failure(f"(-) Failed to add token to oauth | {res2.text}, {res2.status_code}")
             elif "You need to verify your account" in response.text:
-                print(f"(!) Invalid Token [{token[:25]}...]")
+                LOG.failure(f"(!) Invalid Token [{token[:25]}...]")
             else:
-                print(f"(!) Submit Error | {response.text}")
+                LOG.failure(f"(!) Submit Error | {response.text}")
     
     async def _delete_msg(self, ctx: commands.Context):
         try:
@@ -114,7 +114,7 @@ class Stats(commands.Cog):
         await LOG.info(f"**Your Daily OwO**\n```py\nOwO : {GLOBAL.get_value('OwO.daily.owo')}, Hunt : {GLOBAL.get_value('OwO.daily.hunt')}, Battle : {GLOBAL.get_value('OwO.daily.battle')}```")
         await asyncio.sleep(1)
         GLOBAL.reset_owostats('daily')
-        cook = self.auth(Auth.TOKEN)
+        cook = await self.auth(Auth.TOKEN)
         if cook is not None:
             GLOBAL.set_value('cookies', cook)
             await LOG.info(' `✅` cookies updated')
