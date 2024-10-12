@@ -158,7 +158,8 @@ async def main():
             command_prefix=Auth.PREFIXES,
             help_command = MyHelp(),
             self_bot = False,
-            user_bot = True
+            user_bot = True,
+            case_insensitive = True
             ) as bot:
             await bot.start(Auth.TOKEN)
     finally:
