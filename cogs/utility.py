@@ -28,7 +28,6 @@ class Utility(commands.Cog):
         await self._delete_msg(ctx)
         memory = psutil.virtual_memory()
         cpu = psutil.cpu_percent(interval=1)
-        await ctx.send(f"{self.bot.user.display_name} is alive!")
         await ctx.send(
             f"```py\n🏓... pong, latency: {round(self.bot.latency * 1000)} ms, memory : {memory.percent}%, cpu : {cpu}%```",
             delete_after=10,
