@@ -3,3 +3,6 @@ pycolorise
 PyNaCl
 python-dotenv
 selfcord.py @ git+https://github.com/dolfies/discord.py-self@renamed#egg=selfcord.py[voice]
+psutil
+httpx
+tls_client

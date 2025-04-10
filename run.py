@@ -3,9 +3,9 @@ import subprocess
 import time
 
 while True:
-    print('Self-Bot running in process, please wait...')
+    print("Self-Bot running in process, please wait...")
     try:
-        subprocess.call([sys.executable, 'main.py'])
+        subprocess.call([sys.executable, "main.py"])
     except KeyboardInterrupt:
         print("Terminated")
         raise SystemExit

@@ -1,24 +1,12 @@
 import re
-from selfcord.ext import commands, tasks
+from selfcord.ext import commands
 import selfcord
 
 from config import GLOBAL
 from modules.logger import LOG
 
-FABLED = [
-    "dboar", 
-    "deagle", 
-    "dfrog", 
-    "dgorilla", 
-    "dwolf"
-    ]
-HIDDEN = [
-    "hkoala", 
-    "hlizard", 
-    "hsnake", 
-    "hsquid", 
-    "hmonkey"
-    ]
+FABLED = ["dboar", "deagle", "dfrog", "dgorilla", "dwolf"]
+HIDDEN = ["hkoala", "hlizard", "hsnake", "hsquid", "hmonkey"]
 BOTRANK = [
     "dinobot",
     "giraffbot",
@@ -34,27 +22,38 @@ DISTORTED = [
     "glitchzebra",
 ]
 
+
 class Pets(commands.Cog):
     """The description for Pets goes here."""
-    
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.regex_found = r'You found:(.*?)\s*\<:blank:'
-        self.regex_caught = r'caught.*(\S+)!'
-        self.regex_win = r'Streak: ([1-9]+[0-9]*000$)'
-        self.regex_lost = r'You lost your streak of (\d+) wins'
-    
+        self.regex_found = r"You found:(.*?)\s*\<:blank:"
+        self.regex_caught = r"caught.*(\S+)!"
+        self.regex_win = r"Streak: ([1-9]+[0-9]*000$)"
+        self.regex_lost = r"You lost your streak of (\d+) wins"
+
     async def detect_pets(self, message: selfcord.Message):
         ctx = await self.bot.get_context(message)
         pets = []
-        if not ctx.me.display_name in message.content and '**🌱' in message.content:
+        if ctx.me.display_name not in message.content and "**🌱" in message.content:
             return
-        if 'empowered' in message.content:
-            for key in ['OwO.daily.hunt', 'OwO.weekly.hunt', 'OwO.monthly.hunt', 'OwO.total.hunt']:
+        if "empowered" in message.content:
+            for key in [
+                "OwO.daily.hunt",
+                "OwO.weekly.hunt",
+                "OwO.monthly.hunt",
+                "OwO.total.hunt",
+            ]:
                 GLOBAL.set_owostats(key)
             pets = re.search(self.regex_found, message.content)
-        elif 'caught' in message.content:
-            for key in ['OwO.daily.hunt', 'OwO.weekly.hunt', 'OwO.monthly.hunt', 'OwO.total.hunt']:
+        elif "caught" in message.content:
+            for key in [
+                "OwO.daily.hunt",
+                "OwO.weekly.hunt",
+                "OwO.monthly.hunt",
+                "OwO.total.hunt",
+            ]:
                 GLOBAL.set_owostats(key)
             pets = re.search(self.regex_caught, message.content)
         if pets:
@@ -65,6 +64,7 @@ class Pets(commands.Cog):
                 return await LOG.pets(message)
             if any(pet.strip() in DISTORTED for pet in pets[0].split()):
                 return await LOG.pets(message)
+
     @commands.Cog.listener()
     async def on_message(self, message: selfcord.Message):
         if not message.author.id == GLOBAL.owoID:
@@ -76,14 +76,22 @@ class Pets(commands.Cog):
             footer = msg.footer.text if msg.footer.text else None
             if author and footer:
                 if self.bot.user.display_name in author:
-                    for key in ['OwO.daily.battle', 'OwO.weekly.battle', 'OwO.monthly.battle', 'OwO.total.battle']:
+                    for key in [
+                        "OwO.daily.battle",
+                        "OwO.weekly.battle",
+                        "OwO.monthly.battle",
+                        "OwO.total.battle",
+                    ]:
                         GLOBAL.set_owostats(key)
                     match_win = re.search(self.regex_win, footer)
                     match_lost = re.search(self.regex_lost, footer)
                     if match_win:
-                        return await LOG.battle(message, 'win', int(match_win.group(1)) )
+                        return await LOG.battle(message, "win", int(match_win.group(1)))
                     elif match_lost:
-                        return await LOG.battle(message, 'lost', int(match_lost.group(1)) )
+                        return await LOG.battle(
+                            message, "lost", int(match_lost.group(1))
+                        )
+
 
 async def setup(bot):
     await bot.add_cog(Pets(bot))
