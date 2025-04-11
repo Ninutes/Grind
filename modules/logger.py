@@ -96,6 +96,7 @@ class Log:
     async def battle(self, message: selfcord.Message, key: str, value: int):
         b_embed = message.embeds[0]
         embed = Embed(color=b_embed.color)
+        embed.set_author(name=b_embed.author.name, icon_url=b_embed.author.icon_url)
         embed.add_field(name=b_embed.fields[0].name, value=b_embed.fields[0].value)
         embed.add_field(name=b_embed.fields[1].name, value=b_embed.fields[1].value)
         embed.set_footer(text=b_embed.footer.text)

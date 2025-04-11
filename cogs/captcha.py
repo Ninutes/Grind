@@ -204,7 +204,7 @@ class Captcha(commands.Cog):
             try:
                 result = await loop.run_in_executor(
                     pool,
-                    lambda: TwoCaptcha(Auth.APIKEY, defaultTimeout=300).hcaptcha(
+                    lambda: TwoCaptcha(Auth.APIKEY, defaultTimeout=180).hcaptcha(
                         sitekey="a6a1d5ce-612d-472d-8e37-7601408fbc09",
                         url="https://owobot.com/captcha",
                     ),

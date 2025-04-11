@@ -101,25 +101,41 @@ class Stats(commands.Cog):
     async def stats(self, ctx: commands.Context, *args):
         await self._delete_msg(ctx)
         flag = None
+        is_reset = False
+
         if args:
-            flag = args[0].lower()
-            if flag in ["daily", "weekly", "monthly", "total"]:
-                flag = flag
-        else:
-            flag = None
-        owo_stats = GLOBAL.get_value("OwO")
+            # Check if first argument is a valid flag
+            if args[0].lower() in ["daily", "weekly", "monthly", "total"]:
+                flag = args[0].lower()
+            # Check if "reset" is passed as second argument
+            if len(args) > 1 and args[1].lower() == "reset":
+                is_reset = True
+            elif args[0].lower() == "reset":
+                is_reset = True
+
+        owo_stats = GLOBAL.get_value("OwO") or {}
         msg = ""
+
         try:
-            if flag is not None and owo_stats:
-                stats = owo_stats.get(flag)
-                msg = f"```py\nOwO : {stats['owo']}, Hunt : {stats['hunt']}, Battle : {stats['battle']}```"
+            if is_reset:
+                if flag and flag in owo_stats:
+                    # Reset only the specified flag's stats
+                    owo_stats[flag] = {"owo": 0, "hunt": 0, "battle": 0}
+                    msg = f"✅ Reset stats for `{flag}`."
+                else:
+                    # Reset all stats
+                    for key in owo_stats:
+                        owo_stats[key] = {"owo": 0, "hunt": 0, "battle": 0}
+                    msg = "✅ Reset **all** OwO stats."
+                GLOBAL.set_value("OwO", owo_stats)
             else:
-                stats = GLOBAL.get_value("OwO")
-                for i, v in stats.items():
-                    msg += f"**{i.upper()}**```py\nOwO : {v['owo']}, Hunt : {v['hunt']}, Battle: {v['battle']}```"
-            await LOG.info(
-                f"**{flag.upper() if flag is not None else 'OWO'} STATS**\n{msg}"
-            )
+                if flag and owo_stats:
+                    stats = owo_stats.get(flag)
+                    msg = f"```py\nOwO : {stats['owo']}, Hunt : {stats['hunt']}, Battle : {stats['battle']}```"
+                else:
+                    for i, v in owo_stats.items():
+                        msg += f"**{i.upper()}**```py\nOwO : {v['owo']}, Hunt : {v['hunt']}, Battle: {v['battle']}```"
+            await LOG.info(f"**{flag.upper() if flag else 'OWO'} STATS**\n{msg}")
         except Exception as e:
             await LOG.error(f"```py\n{e}```")
 

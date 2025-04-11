@@ -65,32 +65,58 @@ class Pets(commands.Cog):
             if any(pet.strip() in DISTORTED for pet in pets[0].split()):
                 return await LOG.pets(message)
 
+    def get_userid(self, url: str) -> int | None:
+        """
+        Ekstrak user ID dari URL avatar, jika menggunakan custom avatar.
+        """
+        if "embed/avatars/" in url:
+            return 123  # default avatar, tidak ada ID
+        match = re.search(r"avatars/(\d+)/", url)
+        return int(match.group(1)) if match else None
+
     @commands.Cog.listener()
     async def on_message(self, message: selfcord.Message):
-        if not message.author.id == GLOBAL.owoID:
+        if message.author.id != GLOBAL.owoID:
             return
         await self.detect_pets(message)
-        if message.embeds:
-            msg = message.embeds[0]
-            author = msg.author.name if msg.author.name is not None else None
-            footer = msg.footer.text if msg.footer.text else None
-            if author and footer:
-                if self.bot.user.display_name in author:
-                    for key in [
-                        "OwO.daily.battle",
-                        "OwO.weekly.battle",
-                        "OwO.monthly.battle",
-                        "OwO.total.battle",
-                    ]:
-                        GLOBAL.set_owostats(key)
-                    match_win = re.search(self.regex_win, footer)
-                    match_lost = re.search(self.regex_lost, footer)
-                    if match_win:
-                        return await LOG.battle(message, "win", int(match_win.group(1)))
-                    elif match_lost:
-                        return await LOG.battle(
-                            message, "lost", int(match_lost.group(1))
-                        )
+        if not message.embeds:
+            return
+        embed = message.embeds[0]
+
+        author_icon = (
+            str(embed.author.icon_url)
+            if embed.author and embed.author.icon_url
+            else None
+        )
+        author_name = (
+            str(embed.author.name) if embed.author and embed.author.name else None
+        )
+
+        footer_text = embed.footer.text if embed.footer and embed.footer.text else None
+
+        if not footer_text:
+            return
+        player_id = self.get_userid(author_icon)
+        if player_id is None:
+            return
+
+        if player_id == self.bot.user.id or (
+            player_id == 123
+            and GLOBAL.get_value("user.username")
+            == author_name.split(" goes into battle!")[0]
+        ):
+            for key in [
+                "OwO.daily.battle",
+                "OwO.weekly.battle",
+                "OwO.monthly.battle",
+                "OwO.total.battle",
+            ]:
+                GLOBAL.set_owostats(key)
+        # Hasil battle
+        if match := re.search(self.regex_win, footer_text):
+            return await LOG.battle(message, "win", int(match.group(1)))
+        elif match := re.search(self.regex_lost, footer_text):
+            return await LOG.battle(message, "lost", int(match.group(1)))
 
 
 async def setup(bot):
