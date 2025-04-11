@@ -102,8 +102,8 @@ class Pets(commands.Cog):
 
         if player_id == self.bot.user.id or (
             player_id == 123
-            and GLOBAL.get_value("user.username")
-            == author_name.split(" goes into battle!")[0]
+            and GLOBAL.get_value("user.username").lower()
+            == author_name.split(" goes into battle!")[0].strip().lower()
         ):
             for key in [
                 "OwO.daily.battle",
@@ -112,11 +112,11 @@ class Pets(commands.Cog):
                 "OwO.total.battle",
             ]:
                 GLOBAL.set_owostats(key)
-        # Hasil battle
-        if match := re.search(self.regex_win, footer_text):
-            return await LOG.battle(message, "win", int(match.group(1)))
-        elif match := re.search(self.regex_lost, footer_text):
-            return await LOG.battle(message, "lost", int(match.group(1)))
+            # Hasil battle
+            if match := re.search(self.regex_win, footer_text):
+                return await LOG.battle(message, "win", int(match.group(1)))
+            elif match := re.search(self.regex_lost, footer_text):
+                return await LOG.battle(message, "lost", int(match.group(1)))
 
 
 async def setup(bot):
