@@ -101,12 +101,12 @@ class Log:
         embed.set_footer(text=b_embed.footer.text)
         await _webhook(
             msg=message,
-            content=f"<@{self.wb_ping}> I've got something in {message.jump_url}",
+            content=f"<@{self.wb_ping}> in: {message.jump_url}",
             embed=embed,
         )
         if key == "lost":
-            return await LOG.failure(f"You've lost your streak of **{value}** win")
-        return await LOG.success(f"You've reach **{value}** win streak!")
+            return await LOG.failure(f"`😭` You've lost your streak of **{value}** win")
+        return await LOG.success(f"`🎉` You've gained **{value}** win streak!")
 
     async def pets(self, message: selfcord.Message):
         embed = Embed(

@@ -41,7 +41,7 @@ class CMD(commands.Cog):
         await self._delete_msg(ctx)
         GLOBAL.set_value("prefix", prefix)
         self.bot.command_prefix = prefix
-        await LOG.success(f"`✅` prefix set to `{prefix}`")
+        await LOG.success(f"`✅` new prefix: `{prefix}`")
 
     @commands.command(aliases=["math", "calc"])
     async def math_calc(self, ctx: commands.Context, *, expression):
@@ -64,7 +64,7 @@ class CMD(commands.Cog):
         cek = GLOBAL.get_value(key, None)
         if cek is not None:
             GLOBAL.set_value(key, value)
-            return await LOG.success(f"`✅` Successfully set **{key}** to `{value}`")
+            return await LOG.success(f"`✅` set **{key}** to `{value}`")
         else:
             return await LOG.failure(f"`❌` Invalid {key}, or {key} does not exist")
 

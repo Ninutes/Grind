@@ -61,11 +61,9 @@ class Tasks(commands.Cog):
         seconds = seconds % 60
         if self.custom_run != 0:
             return await LOG.info(
-                f"`⛔` stopping self-bot after running **{self._counter}** battles in **{hours}H {minutes}M {seconds}S**"
+                f"`⛔` stopped after**{self._counter}** battles in **{hours}H {minutes}M {seconds}S**"
             )
-        return await LOG.info(
-            f"`⛔` stopping self-bot after running in **{hours}H {minutes}M {seconds}S**"
-        )
+        return await LOG.info(f"`⛔` stopped after **{hours}H {minutes}M {seconds}S**")
 
     def start_task(self):
         if self.runner.is_running():
@@ -98,9 +96,7 @@ class Tasks(commands.Cog):
                 )
             except asyncio.TimeoutError:
                 self.runner.cancel()
-                await LOG.failure(
-                    "self-bot stopped because OwO didn't respond after 30 seconds"
-                )
+                await LOG.failure("OwO didn't respond after 30 seconds")
                 pass
 
     @commands.command(aliases=["start", "resume"])
@@ -116,10 +112,10 @@ class Tasks(commands.Cog):
 
         self.start_task()
 
-        desc = f"`🟢` starting self-bot in {ctx.channel.jump_url}"
+        desc = f"`🟢` starting in {ctx.channel.jump_url}"
         if count:
             self.custom_run = count
-            desc += f"\nand will stop after {count} battles reached"
+            desc += f"\nand will stop after {count} battles"
         await LOG.info(desc)
 
     @commands.command(aliases=["stop", "pause"])
@@ -133,7 +129,7 @@ class Tasks(commands.Cog):
     async def change_channel(self, ctx: commands.Context):
         await self._delete_msg(ctx)
         GLOBAL.set_channel(ctx.channel)
-        return await LOG.success(f"change channel to {ctx.channel.jump_url}")
+        return await LOG.success(f"move to {ctx.channel.jump_url}")
 
     @commands.command()
     async def cek(self, ctx: commands.Context):
@@ -257,7 +253,7 @@ class Tasks(commands.Cog):
         if self.next_sleep_time - random.randint(1, 5) == self.cmd_count:
             self.sleep = True
             sleeping = random.randint(60, 120)
-            await LOG.info(f"sleeping for {sleeping} seconds")
+            await LOG.info(f"take a nap for {sleeping} seconds")
             await asyncio.sleep(sleeping)
             self.sleep = False
             self.sleep_time = time()
@@ -274,7 +270,7 @@ class Tasks(commands.Cog):
             await self.random_cmd()
             if stop:
                 await LOG.captcha_info(
-                    f"getting captcha after sending **{self.cmd_count}** commands"
+                    f"got captcha after **{self.cmd_count}** commands"
                 )
                 self.next_sleep_time = self.cmd_count
                 self.cmd_count = 0

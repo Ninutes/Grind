@@ -42,7 +42,7 @@ class Events(commands.Cog):
             for name in [self.bot.user.display_name, str(self.bot.user.id)]
         ):
             await LOG.info(
-                f"I've found something in {message.jump_url}\n{message.author.mention} :\n```{message.content}```"
+                f"<a:notify:928014945050820628> {message.author.mention} in {message.jump_url}\n```{message.content}```"
             )
         spy = GLOBAL.get_value("spy")
         if spy["enable"]:
@@ -61,7 +61,7 @@ class Events(commands.Cog):
                 )
             ) or message.author.id == spy_member.id:
                 await LOG.info(
-                    f"I've got something in {message.jump_url}\n{message.author.mention} :\n```{message.content}```"
+                    f"<a:notify:928014945050820628> {message.author.mention} in {message.jump_url}\n```{message.content}```"
                 )
 
 
